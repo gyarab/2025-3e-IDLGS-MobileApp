@@ -1,6 +1,7 @@
 > [!WARNING]
 > Z administrativních důvodů bylo rozhodnuto že vývoj mobilní aplikace kompatibilní s systémem IDLGS bude přesunut do odděleného repozitáře.
 > Projekt nemá s hlavní učebnicí, kromě veřejného API na straně učebnice a podpory stejných standartů RESIN (obě věci autorství Martina Bykova) nic společného.
+> Dokumentace tohoto projektu je vedena **zvlášť** s podtitulem DODATEK K RP "Integrovaná digitální vzdělávací a známkovací platforma"
 
 > [!IMPORTANT]
 > Za tento pod-projekt je zcela, a jen a pouze, zodpovědný Ali Yunussov.
