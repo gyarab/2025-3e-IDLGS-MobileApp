@@ -1,4 +1,5 @@
 > [!WARNING]
+> Z administrativních důvodů bylo rozhodnuto že vývoj mobilní aplikace kompatibilní s systémem IDLGS bude přesunut do odděleného repozitáře.
 > Projekt nemá s hlavní učebnicí, kromě veřejného API na straně učebnice a podpory stejných standartů RESIN (obě věci autorství Martina Bykova) nic společného.
 
 > [!IMPORTANT]
@@ -17,6 +18,7 @@ TODO @Ali
 ## Proč tohle existuje?
 > [!IMPORTANT]
 > Z administrativních důvodů smí následující část README měnit jen a pouze Martin Bykov.
+
 Z administrativních důvodů bylo rozhodnuto že vývoj mobilní aplikace kompatibilní s systémem IDLGS bude přesunut do odděleného repozitáře.
 
 Z hlavní aplikací komunikuje přes jeji API. **TYTO 2 PROJEKTY NEJSOU KROMĚ API A SDÍLENÉ SPECIFIKACE INTERAKTIVNÍCH PRVKŮ "RESIN" (plné autorství Martina Bykova) NIJAK SPOJENÉ.** API bylo na straně učebnice implementováno POUZE Martinem Bykovem.
