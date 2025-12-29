@@ -4,9 +4,6 @@
 > [!IMPORTANT]
 > Za tento pod-projekt je zcela, a jen a pouze, zodpovědný Ali Yunussov.
 
-> [!IMPORTANT]
-> Z administrativních důvodů smí toto README měnit jen a pouze Martin Bykov.
-
 > [!NOTE]
 > Hlavní projekt:  https://github.com/gyarab/2025-3e-IDLGS (Martin Bykov, Kira Stepanova)
 
@@ -18,6 +15,8 @@ Mobile app for IDLGS - aplikace pro digitální vzdělávácí platformu a digit
 TODO @Ali
 
 ## Proč tohle existuje?
+> [!IMPORTANT]
+> Z administrativních důvodů smí následující část README měnit jen a pouze Martin Bykov.
 Z administrativních důvodů bylo rozhodnuto že vývoj mobilní aplikace kompatibilní s systémem IDLGS bude přesunut do odděleného repozitáře.
 
 Z hlavní aplikací komunikuje přes jeji API. **TYTO 2 PROJEKTY NEJSOU KROMĚ API A SDÍLENÉ SPECIFIKACE INTERAKTIVNÍCH PRVKŮ "RESIN" (plné autorství Martina Bykova) NIJAK SPOJENÉ.** API bylo na straně učebnice implementováno POUZE Martinem Bykovem.
