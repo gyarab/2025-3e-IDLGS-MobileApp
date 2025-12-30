@@ -11,6 +11,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import cz.idlgs.R
 import cz.idlgs.ui.theme.IDLGSTheme
+import cz.idlgs.utils.AuthUtils
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -25,19 +26,6 @@ fun LoginScreen(
 	var emailError by remember { mutableStateOf<String?>(null) }
 	var isLoading by remember { mutableStateOf(false) }
 	val scope = rememberCoroutineScope()
-	// 1. Regex Validation
-	fun isEmailFormatValid(email: String): Boolean {
-		val emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\$".toRegex()
-		return email.matches(emailRegex)
-	}
-	// 2. Mock API Check to see if email exists
-	suspend fun doesEmailExist(email: String): Boolean {
-		isLoading = true
-		delay(1500) // Simulate network request time
-		// Mock logic: In a real app, you would call your backend here
-		isLoading = false
-		return email == "user@example.com"
-	}
 
 	Column(
 		modifier = Modifier
@@ -56,7 +44,7 @@ fun LoginScreen(
 			if (email.isNotEmpty()) {
 				delay(500) // Wait for user to stop typing for 500ms
 				// Perform validation here automatically
-				// e.g., if (!isEmailFormatValid(email)) ...
+				// e.g., if (!AuthUtils.isEmailFormatValid(email)) ...
 			}
 		}
 		OutlinedTextField(
@@ -65,20 +53,11 @@ fun LoginScreen(
 				email = it
 				scope.launch {
 					emailError = null
-					val temp = email.split("@")
-					if (!email.contains(Regex("@\\w+\\.\\w+")) || temp[1].length < 4) return@launch
-					// Step 1: Check Regex
-					if (!isEmailFormatValid(email)) {
+					if (email.contains(AuthUtils.emailRegex) && !AuthUtils.isEmailFormatValid(email)) {
 						emailError = "Invalid email format"
-						return@launch
 					}
-					// Step 2: Check Existence (Async)
-					val exists = doesEmailExist(email)
-
-					if (exists) onLoginClick(email, password)
-					else emailError = "Email not found (Try: user@example.com)"
 				}
-//				emailError = null // Clear error when user types
+//				emailError = null
 			},
 			label = { Text(stringResource(R.string.email)) },
 			isError = emailError != null,
@@ -104,24 +83,20 @@ fun LoginScreen(
 			onClick = {
 				scope.launch {
 					emailError = null
-					if (!email.contains(Regex("@\\w+\\.\\w+"))) {
-						emailError = "Required"
-						return@launch
-					}
-
-					// Step 1: Check Regex
-					if (!isEmailFormatValid(email)) {
+					if (!AuthUtils.isEmailFormatValid(email)) {
 						emailError = "Invalid email format"
 						return@launch
 					}
-					// Step 2: Check Existence (Async)
-//					val exists = doesEmailExist(email)
 
-					if (true) onLoginClick(email, password)
-					else emailError = "Email not found (Try: user@example.com)"
+					isLoading = true
+					val exists = AuthUtils.doesEmailExist(email)
+					isLoading = false
+
+					if (exists) onLoginClick(email, password)
+					else emailError = "Email not found"
 				}
 			},
-			enabled = !isLoading,
+			enabled = !isLoading && email.contains(AuthUtils.emailRegex),
 			modifier = Modifier.fillMaxWidth()
 		) {
 			if (isLoading) {

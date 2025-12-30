@@ -1,6 +1,7 @@
 *.iml
 build/
 *gradle*
+!build.gradle.kts
 *.pro
 xml/
 
