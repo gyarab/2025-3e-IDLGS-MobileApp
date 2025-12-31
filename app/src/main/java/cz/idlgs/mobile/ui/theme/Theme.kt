@@ -1,4 +1,4 @@
-package cz.idlgs.ui.theme
+package cz.idlgs.mobile.ui.theme
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
