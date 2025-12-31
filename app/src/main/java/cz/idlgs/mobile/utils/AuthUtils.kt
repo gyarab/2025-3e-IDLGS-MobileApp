@@ -1,4 +1,4 @@
-package cz.idlgs.utils
+package cz.idlgs.mobile.utils
 
 import kotlinx.coroutines.delay
 

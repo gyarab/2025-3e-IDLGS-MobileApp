@@ -9,4 +9,9 @@
     <string name="forgot_password">Forgot Password?</string>
     <string name="password">Password</string>
     <string name="login">Login</string>
+    <string name="back_to_login">Back to Login</string>
+    <string name="invalid_email_format">Invalid email format</string>
+    <string name="reset_link_sent_to">Reset link sent to %1$s</string>
+    <string name="email_not_found">Email not found</string>
+    <string name="send_reset_link">Send Reset Link</string>
 </resources>
