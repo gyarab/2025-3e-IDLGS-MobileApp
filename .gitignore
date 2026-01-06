@@ -1,20 +1,16 @@
+.idea/
 *.iml
-build/
-*gradle*
-!build.gradle.kts
-*.pro
-xml/
 
-/local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
-/.idea
+.gradle/
+build/
+# temp ↓
+xml/
+*.pro
+
+local.properties
+
+.externalNativeBuild/
+.cxx/
 
 .DS_Store
-.externalNativeBuild
-.cxx
-local.properties
+*.log
