@@ -1,9 +1,20 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.util.Properties
 
 plugins {
 	alias(libs.plugins.android.application)
 	alias(libs.plugins.kotlin.android)
 	alias(libs.plugins.kotlin.compose)
+}
+
+@Suppress("PropertyName")
+val LM_STUDIO_URL = "LM_STUDIO_URL"
+
+fun appVersionName(): String {
+	val date = LocalDate.now().format(DateTimeFormatter.ofPattern("yy.DDD"))
+	return "a$date"
 }
 
 android {
@@ -17,9 +28,17 @@ android {
 		minSdk = 24
 		targetSdk = 36
 		versionCode = 1
-		versionName = "1.0"
+		versionName = appVersionName()
 
 		testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+		val properties = Properties()
+		val localPropertiesFile = project.rootProject.file("local.properties")
+		if (localPropertiesFile.exists())
+			properties.load(localPropertiesFile.inputStream())
+
+		val lmStudioUrl = properties.getProperty(LM_STUDIO_URL) ?: ""
+		buildConfigField("String", LM_STUDIO_URL, lmStudioUrl)
 	}
 
 	buildTypes {
@@ -40,6 +59,7 @@ android {
 	}
 	buildFeatures {
 		compose = true
+		buildConfig = true
 	}
 }
 
@@ -55,6 +75,10 @@ dependencies {
 	implementation(libs.androidx.compose.material3.adaptive.navigation.suite)
 	implementation(libs.androidx.datastore.preferences)
 	implementation(libs.androidx.compose.material.icons.extended)
+
+	implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.10.0")
+	implementation(libs.okhttp)
+	implementation(libs.gson)
 
 	testImplementation(libs.junit)
 	androidTestImplementation(libs.androidx.junit)
