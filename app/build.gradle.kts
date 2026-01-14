@@ -37,7 +37,7 @@ android {
 		if (localPropertiesFile.exists())
 			properties.load(localPropertiesFile.inputStream())
 
-		val lmStudioUrl = properties.getProperty(LM_STUDIO_URL) ?: ""
+		val lmStudioUrl = properties.getProperty(LM_STUDIO_URL)
 		buildConfigField("String", LM_STUDIO_URL, lmStudioUrl)
 	}
 
