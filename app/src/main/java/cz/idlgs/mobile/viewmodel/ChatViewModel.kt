@@ -16,7 +16,6 @@ import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import java.io.BufferedReader
-import java.io.IOException
 
 data class ChatMessage(
 	val role: Role,
@@ -42,7 +41,7 @@ data class Choice(
 	val message: ChatMessage
 )
 
-class ChatViewModel : ViewModel() {
+class ChatViewModel() : ViewModel() {
 	private val _messages = MutableStateFlow<List<ChatMessage>>(emptyList())
 	val messages = _messages.asStateFlow()
 
@@ -81,21 +80,18 @@ class ChatViewModel : ViewModel() {
 					lastError = e
 					if (USE_STREAMING) {
 						val lastMsg = _messages.value.lastOrNull()
-						if (lastMsg != null && lastMsg.role == Role.assistant) {
+						if (lastMsg != null && lastMsg.role == Role.assistant)
 							_messages.value = _messages.value.dropLast(1)
-						}
 					}
 				}
 			}
 			lastError?.let {
-				_messages.value +=
-					ChatMessage(
-						Role.error,
-						"Error: $it".replace(BASE_URL, "")
-					)
+				_messages.value += ChatMessage(
+					Role.error,
+					"Error:\nPlease try again later"
+				)
 				if (BuildConfig.DEBUG)
-					_messages.value += ChatMessage(Role.error, it.stackTraceToString())
-//				Log.e("ChatViewModel", "Error: ${it.stackTraceToString()}")
+					Log.e("ChatViewModel", it.stackTraceToString())
 			}
 			_isLoading.value = false
 		}
@@ -106,7 +102,6 @@ class ChatViewModel : ViewModel() {
 		val jsonBody = gson.toJson(requestBody)
 		val mediaType = "application/json; charset=utf-8".toMediaType()
 		val body = jsonBody.toRequestBody(mediaType)
-		Log.d("ChatViewModel", "Request body: $jsonBody")
 
 		val request = Request.Builder()
 			.url(BASE_URL)
@@ -116,7 +111,7 @@ class ChatViewModel : ViewModel() {
 
 		client.newCall(request).execute().use { response ->
 			if (!response.isSuccessful) {
-				throw IOException("Unexpected code ${response.code} for model $model")
+				throw Exception("Server returned code ${response.code}")
 			}
 
 			if (stream) handleStreamingResponse(response)
@@ -167,7 +162,7 @@ class ChatViewModel : ViewModel() {
 						}
 					}
 				} catch (e: Exception) {
-					e.printStackTrace()
+					Log.e("ChatViewModel", "Parsing error", e)
 				}
 			}
 		}
