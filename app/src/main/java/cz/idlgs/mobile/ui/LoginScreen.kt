@@ -4,18 +4,18 @@ import android.content.res.Configuration
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.*
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -31,6 +31,7 @@ fun LoginScreen(
 ) {
 	val focusRequester = remember { FocusRequester() }
 	val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
+	val showPassword = rememberSaveable { mutableStateOf(false) }
 
 	LaunchedEffect(Unit) {
 		focusRequester.requestFocus()
@@ -64,11 +65,19 @@ fun LoginScreen(
 			value = viewModel.password,
 			onValueChange = viewModel::onPasswordChange,
 			label = { Text(stringResource(R.string.password)) },
-			visualTransformation = PasswordVisualTransformation(),
+			visualTransformation = if (showPassword.value) VisualTransformation.None else PasswordVisualTransformation(),
 			isError = viewModel.passwordError != null,
 			supportingText = { viewModel.passwordError?.let { Text(it) } },
 			modifier = Modifier.fillMaxWidth(),
 			singleLine = true,
+			trailingIcon = {
+				IconButton(onClick = { showPassword.value = !showPassword.value }) {
+					Icon(
+						if (showPassword.value) Icons.Default.Visibility else Icons.Default.VisibilityOff,
+						contentDescription = null
+					)
+				}
+			},
 			keyboardOptions = KeyboardOptions(
 				keyboardType = KeyboardType.Password,
 				imeAction = ImeAction.Go
