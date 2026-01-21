@@ -27,7 +27,7 @@ android {
 		applicationId = namespace
 		minSdk = 24
 		targetSdk = 36
-		versionCode = 1
+		versionCode = 2
 		versionName = appVersionName()
 
 		testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -44,6 +44,7 @@ android {
 	buildTypes {
 		debug {
 			applicationIdSuffix = ".dev"
+			versionNameSuffix = "-dev"
 		}
 		release {
 			isMinifyEnabled = false
@@ -56,6 +57,11 @@ android {
 	compileOptions {
 		sourceCompatibility = JavaVersion.VERSION_11
 		targetCompatibility = JavaVersion.VERSION_11
+	}
+	kotlin {
+		compilerOptions {
+			jvmTarget.set(JvmTarget.JVM_11)
+		}
 	}
 	buildFeatures {
 		compose = true
@@ -76,7 +82,7 @@ dependencies {
 	implementation(libs.androidx.datastore.preferences)
 	implementation(libs.androidx.compose.material.icons.extended)
 
-	implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.10.0")
+	implementation(libs.lifecycle.viewmodel.compose)
 	implementation(libs.okhttp)
 	implementation(libs.gson)
 
@@ -87,10 +93,4 @@ dependencies {
 	androidTestImplementation(libs.androidx.compose.ui.test.junit4)
 	debugImplementation(libs.androidx.compose.ui.tooling)
 	debugImplementation(libs.androidx.compose.ui.test.manifest)
-}
-
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
-	compilerOptions {
-		jvmTarget.set(JvmTarget.JVM_11)
-	}
 }
