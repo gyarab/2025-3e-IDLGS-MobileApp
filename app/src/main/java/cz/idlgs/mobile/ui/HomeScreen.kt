@@ -1,5 +1,7 @@
 package cz.idlgs.mobile.ui
 
+import android.annotation.SuppressLint
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -59,7 +61,7 @@ fun AboutScreen() {
 			.fillMaxSize()
 			.padding(20.dp),
 		horizontalAlignment = Alignment.CenterHorizontally,
-		verticalArrangement = Arrangement.Center
+		verticalArrangement = Arrangement.Center,
 	) {
 		Text(
 			text = "This app is an extension of the IDLGS platform that helps you stay connected to your school life in one place.",
@@ -76,20 +78,24 @@ fun AboutScreen() {
 			style = MaterialTheme.typography.bodyLarge
 		)
 		Spacer(modifier = Modifier.height(32.dp))
-		LinkToIDLGS()
+		LinkToUrlButton(BuildConfig.WEBSITE_URL, "IDLGS platform")
 	}
 }
 
+@SuppressLint("ModifierParameter")
 @Composable
-fun LinkToIDLGS() {
-	val context = LocalContext.current
-	val openUrl: () -> Unit =
-		{ openLinkInBrowser(context = context, url = "https://ucebnice.martinbykov.eu") }
+fun LinkToUrlButton(
+	url: String,
+	text: String = url,
+	modifier: Modifier = Modifier.fillMaxWidth(.8f),
+	context: Context = LocalContext.current
+) {
+	val openUrl = { context.openLinkInBrowser(url) }
 	TextButton(
 		onClick = openUrl,
-		modifier = Modifier.fillMaxWidth(.8f),
+		modifier = modifier,
 	) {
-		Text("IDLGS platform")
+		Text(text)
 	}
 }
 
