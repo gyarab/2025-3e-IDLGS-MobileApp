@@ -1,3 +1,4 @@
+import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -9,12 +10,27 @@ plugins {
 	alias(libs.plugins.kotlin.compose)
 }
 
-@Suppress("PropertyName")
-val LM_STUDIO_URL = "LM_STUDIO_URL"
-
 fun appVersionName(): String {
 	val date = LocalDate.now().format(DateTimeFormatter.ofPattern("yy.DDD"))
 	return "a$date"
+}
+
+fun BaseAppModuleExtension.buildConfigFromLocalProperties(vararg keys: String) {
+	val properties = Properties()
+	val localPropertiesFile = project.rootProject.file("local.properties")
+	if (localPropertiesFile.exists())
+		localPropertiesFile.inputStream().use { properties.load(it) }
+
+	keys.forEach { key ->
+		val rawValue = properties.getProperty(key) ?: ""
+		val (type, value) = when {
+			rawValue.equals("true", true) || rawValue.equals("false", true) ->
+				"boolean" to rawValue.lowercase()
+			rawValue.toIntOrNull() != null -> "int" to rawValue
+			else -> "String" to rawValue
+		}
+		defaultConfig.buildConfigField(type, key, value)
+	}
 }
 
 android {
@@ -32,13 +48,7 @@ android {
 
 		testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-		val properties = Properties()
-		val localPropertiesFile = project.rootProject.file("local.properties")
-		if (localPropertiesFile.exists())
-			properties.load(localPropertiesFile.inputStream())
-
-		val lmStudioUrl = properties.getProperty(LM_STUDIO_URL)
-		buildConfigField("String", LM_STUDIO_URL, lmStudioUrl)
+		buildConfigFromLocalProperties("LM_STUDIO_URL", "WEBSITE_URL")
 	}
 
 	buildTypes {
