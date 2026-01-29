@@ -8,6 +8,7 @@ plugins {
 	alias(libs.plugins.android.application)
 	alias(libs.plugins.kotlin.android)
 	alias(libs.plugins.kotlin.compose)
+	id("com.google.devtools.ksp") version libs.versions.kotlin
 }
 
 fun appVersionName(): String {
@@ -95,6 +96,10 @@ dependencies {
 	implementation(libs.lifecycle.viewmodel.compose)
 	implementation(libs.okhttp)
 	implementation(libs.gson)
+	implementation(libs.androidx.compose.animation)
+	implementation(libs.androidx.navigation.testing)
+	implementation("io.github.raamcosta.compose-destinations:core:2.3.0")
+	ksp("io.github.raamcosta.compose-destinations:ksp:2.3.0")
 
 	testImplementation(libs.junit)
 	androidTestImplementation(libs.androidx.junit)
