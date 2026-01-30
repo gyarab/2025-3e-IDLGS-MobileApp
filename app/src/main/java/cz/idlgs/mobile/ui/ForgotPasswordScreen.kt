@@ -17,21 +17,25 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
 import cz.idlgs.mobile.R
+import cz.idlgs.mobile.nav.AuthNavGraph
 import cz.idlgs.mobile.ui.theme.IDLGSTheme
 import cz.idlgs.mobile.utils.UiUtils
 import cz.idlgs.mobile.viewmodel.AuthViewModel
 
+@Destination<AuthNavGraph>
 @Composable
 fun ForgotPasswordScreen(
+	navigator: DestinationsNavigator,
 	viewModel: AuthViewModel,
-	onNavigateBack: () -> Unit
 ) {
 	val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
 	val focusRequester = remember { FocusRequester() }
-	val msgInvalidEmail = stringResource(R.string.invalid_email_format)
-	val msgEmailNotFound = stringResource(R.string.email_not_found)
 
 	LaunchedEffect(Unit) {
 		focusRequester.requestFocus()
@@ -40,7 +44,7 @@ fun ForgotPasswordScreen(
 	val Header = @Composable {
 		Text(
 			text = stringResource(R.string.forgot_password),
-			style = MaterialTheme.typography.headlineMedium
+			style = MaterialTheme.typography.headlineLarge
 		)
 		Text(
 			text = "Enter your email to receive a reset link.",
@@ -77,18 +81,16 @@ fun ForgotPasswordScreen(
 			enabled = !viewModel.isLoading && viewModel.email.text.isNotEmpty(),
 			modifier = Modifier.fillMaxWidth(.9f)
 		) {
-			if (viewModel.isLoading)
-				CircularProgressIndicator(
-					modifier = Modifier.size(24.dp),
-					color = MaterialTheme.colorScheme.onPrimary
-				)
-			else Text(stringResource(R.string.send_reset_link))
+			LoadingCircle(viewModel.isLoading, R.string.send_reset_link)
 		}
 		TextButton(
-			onClick = onNavigateBack,
+			onClick = { navigator.navigateUp() },
 			modifier = Modifier.fillMaxWidth(.9f)
 		) {
-			Text(stringResource(R.string.back_to_login))
+			Text(
+				stringResource(R.string.back_to_login),
+				style = LocalTextStyle.current.copy(fontSize = 16.sp)
+			)
 		}
 	}
 
@@ -103,8 +105,8 @@ fun ForgotPasswordScreen(
 fun ForgotScreenPreview() {
 	IDLGSTheme {
 		ForgotPasswordScreen(
+			navigator = EmptyDestinationsNavigator,
 			viewModel = viewModel(),
-			onNavigateBack = {},
 		)
 	}
 }

@@ -1,6 +1,7 @@
 package cz.idlgs.mobile.ui
 
 import android.content.res.Configuration
+import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -18,16 +19,23 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.*
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.generated.destinations.ForgotPasswordScreenDestination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
 import cz.idlgs.mobile.R
+import cz.idlgs.mobile.nav.AuthNavGraph
 import cz.idlgs.mobile.ui.theme.IDLGSTheme
 import cz.idlgs.mobile.utils.UiUtils
 import cz.idlgs.mobile.viewmodel.AuthViewModel
 
+@Destination<AuthNavGraph>(start = true)
 @Composable
 fun LoginScreen(
+	navigator: DestinationsNavigator,
 	viewModel: AuthViewModel,
-	onForgotPasswordClick: () -> Unit
 ) {
 	val focusRequester = remember { FocusRequester() }
 	val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
@@ -40,7 +48,7 @@ fun LoginScreen(
 	val Header = @Composable {
 		Text(
 			text = stringResource(R.string.login),
-			style = MaterialTheme.typography.headlineMedium
+			style = MaterialTheme.typography.headlineLarge
 		)
 	}
 	val Form = @Composable {
@@ -93,18 +101,17 @@ fun LoginScreen(
 			enabled = !viewModel.isLoading && viewModel.email.text.isNotEmpty(),
 			modifier = Modifier.fillMaxWidth(.9f)
 		) {
-			if (viewModel.isLoading) CircularProgressIndicator(
-				modifier = Modifier.size(24.dp),
-				color = MaterialTheme.colorScheme.onPrimary
-			)
-			else Text(stringResource(R.string.log_in))
+			LoadingCircle(viewModel.isLoading, R.string.login)
 		}
 
 		TextButton(
-			onClick = onForgotPasswordClick,
+			onClick = { navigator.navigate(ForgotPasswordScreenDestination) },
 			modifier = Modifier.fillMaxWidth(.9f)
 		) {
-			Text(stringResource(R.string.forgot_password))
+			Text(
+				stringResource(R.string.forgot_password),
+				style = LocalTextStyle.current.copy(fontSize = 16.sp)
+			)
 		}
 	}
 
@@ -115,13 +122,22 @@ fun LoginScreen(
 	)
 }
 
+@Composable
+fun LoadingCircle(isLoading: Boolean, @StringRes textId: Int) {
+	if (isLoading) CircularProgressIndicator(
+		modifier = Modifier.size(32.dp),
+		color = MaterialTheme.colorScheme.primary
+	)
+	else Text(
+		stringResource(textId),
+		style = LocalTextStyle.current.copy(fontSize = 16.sp)
+	)
+}
+
 @Preview(showBackground = true)
 @Composable
 fun LoginScreenPreview() {
 	IDLGSTheme {
-		LoginScreen(
-			viewModel = viewModel(),
-			onForgotPasswordClick = {}
-		)
+		LoginScreen(EmptyDestinationsNavigator, viewModel())
 	}
 }
