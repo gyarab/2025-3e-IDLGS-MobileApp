@@ -3,6 +3,8 @@ package cz.idlgs.mobile.utils
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffoldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -10,8 +12,18 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 
 object UiUtils {
+
+	@OptIn(ExperimentalLayoutApi::class)
+	@Composable
+	fun isImeOpen() = WindowInsets.isImeVisible
+
 	@Composable
 	fun orientation() = LocalConfiguration.current.orientation
+
+	@Composable
+	fun adaptiveNavSuiteType() = NavigationSuiteScaffoldDefaults.navigationSuiteType(
+		currentWindowAdaptiveInfo()
+	)
 
 	@Composable
 	fun SplitIfLandscape(
