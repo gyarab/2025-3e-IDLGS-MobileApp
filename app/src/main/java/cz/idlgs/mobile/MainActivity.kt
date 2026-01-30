@@ -5,34 +5,42 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.annotation.StringRes
-import androidx.compose.animation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountBox
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material3.*
+import androidx.compose.material3.Icon
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import cz.idlgs.mobile.ui.*
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
+import com.ramcosta.composedestinations.DestinationsNavHost
+import com.ramcosta.composedestinations.generated.NavGraphs
+import com.ramcosta.composedestinations.generated.destinations.ForgotPasswordScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.LoginScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.ProfileScreenDestination
+import com.ramcosta.composedestinations.navigation.DependenciesContainerBuilder
+import com.ramcosta.composedestinations.navigation.dependency
+import com.ramcosta.composedestinations.spec.Direction
+import com.ramcosta.composedestinations.spec.TypedDestinationSpec
+import com.ramcosta.composedestinations.utils.rememberDestinationsNavigator
+import cz.idlgs.mobile.nav.guestDestinations
+import cz.idlgs.mobile.nav.userDestinations
+import cz.idlgs.mobile.repository.AuthRepository
 import cz.idlgs.mobile.ui.theme.IDLGSTheme
 import cz.idlgs.mobile.ui.theme.Typography
-import cz.idlgs.mobile.utils.Utils
+import cz.idlgs.mobile.utils.UiUtils
 import cz.idlgs.mobile.utils.Utils.showToast
-import cz.idlgs.mobile.viewmodel.AuthUiEvent
-import cz.idlgs.mobile.viewmodel.AuthViewModel
+import cz.idlgs.mobile.viewmodel.*
 
 class MainActivity : ComponentActivity() {
 	override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,17 +55,22 @@ class MainActivity : ComponentActivity() {
 @PreviewScreenSizes
 @Composable
 fun IDLGSApp() {
-	var currentDestination by rememberSaveable { mutableStateOf(AppDestinations.HOME) }
-	var showForgotPassword by rememberSaveable { mutableStateOf(false) }
-	var showChat by rememberSaveable { mutableStateOf(false) }
-	val authViewModel: AuthViewModel = viewModel()
-
-	val msgNotImplemented = stringResource(R.string.not_yet_implemented)
-	val msgResetLinkSent = stringResource(R.string.reset_link_sent_to)
+	val authRepository = AuthRepository()
+	val authViewModel: AuthViewModel = viewModel(factory = AuthVMFactory(authRepository))
+	val profileViewModel: ProfileViewModel = viewModel(factory = ProfileVMFactory(authRepository))
+	val isLoggedIn by authViewModel.isLoggedIn.collectAsStateWithLifecycle()
+	val currentDestinations = if (isLoggedIn) userDestinations else guestDestinations
 
 	val context = LocalContext.current
 	val configuration = LocalConfiguration.current
 	val snackbarHostState = remember { SnackbarHostState() }
+
+	val navController = rememberNavController()
+	val navigator = navController.rememberDestinationsNavigator()
+	val navBackStackEntry by navController.currentBackStackEntryAsState()
+	val destination = navBackStackEntry?.destination
+	fun isSameDestination(it: Direction) = destination?.route == it.route
+
 	LaunchedEffect(authViewModel.uiEvent) {
 		authViewModel.uiEvent.collect { event ->
 			when (event) {
@@ -73,17 +86,17 @@ fun IDLGSApp() {
 		when {
 			(notLargeScreen && isLandscape) -> NavigationSuiteType.NavigationRail
 			notLargeScreen -> NavigationSuiteType.ShortNavigationBarMedium
-			else -> Utils.adaptiveNavSuiteType()
+			else -> UiUtils.adaptiveNavSuiteType()
 		}
-	if (showChat) ChatDialog(onDismiss = { showChat = false })
-	if (BuildConfig.DEBUG) context.showToast("Version ${BuildConfig.VERSION_NAME}")
-
 
 	NavigationSuiteScaffold(
-		modifier = Modifier.windowInsetsPadding(WindowInsets.ime),
+		modifier = Modifier
+			.fillMaxSize()
+			.windowInsetsPadding(WindowInsets.safeDrawing)
+			.consumeWindowInsets(WindowInsets.safeDrawing),
 		layoutType = layoutType,
 		navigationSuiteItems = {
-			AppDestinations.entries.forEach {
+			currentDestinations.forEach {
 				item(
 					icon = {
 						Icon(
@@ -92,65 +105,35 @@ fun IDLGSApp() {
 						)
 					},
 					label = { Text(stringResource(it.labelRes)) },
-					onClick = { currentDestination = it },
-					selected = it == currentDestination,
+					selected = isSameDestination(it.direction),
+					onClick = {
+						if (isSameDestination(it.direction)) return@item
+						navigator.navigate(it.direction) {
+							popUpTo(NavGraphs.root) { inclusive = true }
+							launchSingleTop = true
+						}
+					},
 				)
 			}
-		}
+		},
 	) {
-		when (currentDestination) {
-			AppDestinations.PROFILE -> {
-				Box(
-					modifier = Modifier.fillMaxSize()
-				) {
-					AnimatedContent(
-						targetState = showForgotPassword,
-						transitionSpec = {
-							if (targetState)
-								(slideInHorizontally { width -> width } + fadeIn())
-									.togetherWith(slideOutHorizontally { width -> -width } + fadeOut())
-							else
-								(slideInHorizontally { width -> -width } + fadeIn())
-									.togetherWith(slideOutHorizontally { width -> width } + fadeOut())
-						}, label = "auth_transition"
-					) { isForgotPassword ->
-						if (isForgotPassword)
-							ForgotPasswordScreen(
-								viewModel = authViewModel,
-								onNavigateBack = { showForgotPassword = false }
-							)
-						else
-							LoginScreen(
-								viewModel = authViewModel,
-								onForgotPasswordClick = { showForgotPassword = true }
-							)
-					}
+		DestinationsNavHost(
+			navController = navController,
+			navGraph = NavGraphs.root,
+			dependenciesContainerBuilder = {
+				when {
+					isIn(LoginScreenDestination, ForgotPasswordScreenDestination) ->
+						dependency(authViewModel)
+					isIn(ProfileScreenDestination) ->
+						dependency(profileViewModel)
 				}
-			}
-			else -> Scaffold(
-				modifier = Modifier.fillMaxSize()
-			) { innerPadding ->
-				Box(
-					modifier = Modifier
-						.padding(innerPadding)
-						.fillMaxSize(),
-					contentAlignment = Alignment.TopCenter
-				) {
-					HomeScreen { showChat = true }
-				}
-			}
-		}
+			},
+		)
 	}
 }
 
-enum class AppDestinations(
-	@param:StringRes val labelRes: Int,
-	val icon: ImageVector,
-) {
-	HOME(R.string.home, Icons.Default.Home),
-	//	FAVORITES(R.string.favorites, Icons.Default.Favorite),
-	PROFILE(R.string.profile, Icons.Default.AccountBox),
-}
+private fun DependenciesContainerBuilder<*>.isIn(vararg destinations: TypedDestinationSpec<*>) =
+	destination in destinations
 
 @Composable
 fun Greeting(

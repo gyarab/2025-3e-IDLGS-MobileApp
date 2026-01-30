@@ -21,14 +21,19 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
 import cz.idlgs.mobile.BuildConfig
+import cz.idlgs.mobile.nav.ChatNavGraph
 import cz.idlgs.mobile.ui.theme.IDLGSTheme
 import cz.idlgs.mobile.viewmodel.ChatViewModel
 import cz.idlgs.mobile.viewmodel.Role
 
+@Destination<ChatNavGraph>(start = true)
 @Composable
 fun ChatDialog(
-	onDismiss: () -> Unit,
+	navigator: DestinationsNavigator,
 	viewModel: ChatViewModel = viewModel()
 ) {
 	var text by remember { mutableStateOf("") }
@@ -52,7 +57,7 @@ fun ChatDialog(
 	}
 
 	Dialog(
-		onDismissRequest = onDismiss,
+		onDismissRequest = { navigator.navigateUp() },
 		properties = DialogProperties(usePlatformDefaultWidth = false),
 	) {
 		Surface(
@@ -68,7 +73,7 @@ fun ChatDialog(
 				Row(
 					modifier = Modifier
 						.fillMaxWidth()
-						.padding(16.dp,8.dp),
+						.padding(16.dp, 8.dp),
 					horizontalArrangement = Arrangement.SpaceBetween,
 					verticalAlignment = Alignment.CenterVertically
 				) {
@@ -76,7 +81,7 @@ fun ChatDialog(
 						text = if (BuildConfig.DEBUG) "Chat" else "AI Assistant",
 						style = MaterialTheme.typography.titleLarge
 					)
-					IconButton(onClick = onDismiss) {
+					IconButton(onClick = { navigator.navigateUp() }) {
 						Icon(Icons.Default.Close, contentDescription = "Close")
 					}
 				}
@@ -168,6 +173,6 @@ fun ChatDialog(
 @Composable
 fun ChatDialogPreview() {
 	IDLGSTheme {
-		ChatDialog(onDismiss = {})
+		ChatDialog(EmptyDestinationsNavigator)
 	}
 }
