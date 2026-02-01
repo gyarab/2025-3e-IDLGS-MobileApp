@@ -1,5 +1,6 @@
 package cz.idlgs.mobile.viewmodel
 
+import android.util.Patterns
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -7,17 +8,19 @@ import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import cz.idlgs.mobile.R
+import cz.idlgs.mobile.domain.repository.AuthRepository
+import cz.idlgs.mobile.utils.UiEventManager
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-sealed class AuthUiEvent {
-	data class ShowMessage(val message: String) : AuthUiEvent()
-	data class ShowSnackbar(val message: String) : AuthUiEvent()
-}
-
-class AuthViewModel : ViewModel() {
+@HiltViewModel
+class AuthViewModel @Inject constructor(
+	private val authRepository: AuthRepository,
+	private val uiEventManager: UiEventManager
+) : ViewModel() {
 	var email by mutableStateOf(TextFieldValue(""))
 		private set
 	var password by mutableStateOf("")
@@ -26,14 +29,12 @@ class AuthViewModel : ViewModel() {
 		private set
 	var passwordError by mutableStateOf<String?>(null)
 		private set
+
 	var isLoading by mutableStateOf(false)
 		private set
 
-	private val _uiEvent = MutableSharedFlow<AuthUiEvent>()
-	val uiEvent = _uiEvent.asSharedFlow()
-
 	fun onEmailChange(newValue: TextFieldValue) {
-		email = newValue
+		email = newValue.copy(text = newValue.text.trim())
 		emailError = null
 	}
 
@@ -51,7 +52,7 @@ class AuthViewModel : ViewModel() {
 			}
 	}
 
-	private val emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$".toRegex()
+	private val emailRegex = Patterns.EMAIL_ADDRESS.toRegex()
 	private fun isEmailFormatValid(email: String) = email.matches(emailRegex)
 
 	fun performLogin() {
@@ -63,14 +64,17 @@ class AuthViewModel : ViewModel() {
 				emailError = "Invalid email format"
 				return@launch
 			}
-			if (password.isBlank()) {
+			if (password.isEmpty()) {
 				passwordError = "Password cannot be empty"
 				return@launch
 			}
 
 			isLoading = true
-			delay(1000)
-			_uiEvent.emit(AuthUiEvent.ShowMessage("Not implemented yet"))
+			delay(1500)
+
+			val result = authRepository.login(email.text, password)
+			if (result.isSuccess) uiEventManager.showToast("Logged in")
+			else uiEventManager.showSnackbar("Login failed")
 
 			isLoading = false
 		}
@@ -86,7 +90,7 @@ class AuthViewModel : ViewModel() {
 
 			isLoading = true
 			delay(1000)
-			_uiEvent.emit(AuthUiEvent.ShowMessage("Not implemented yet"))
+			uiEventManager.showSnackbar(R.string.not_yet_implemented)
 			isLoading = false
 		}
 	}

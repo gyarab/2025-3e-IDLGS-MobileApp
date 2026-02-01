@@ -18,6 +18,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -32,7 +33,7 @@ import cz.idlgs.mobile.viewmodel.AuthViewModel
 @Composable
 fun ForgotPasswordScreen(
 	navigator: DestinationsNavigator,
-	viewModel: AuthViewModel,
+	viewModel: AuthViewModel = hiltViewModel(),
 ) {
 	val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
 	val focusRequester = remember { FocusRequester() }
