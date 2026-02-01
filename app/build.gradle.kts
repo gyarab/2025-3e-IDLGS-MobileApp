@@ -1,3 +1,4 @@
+
 import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.time.LocalDate
@@ -8,7 +9,9 @@ plugins {
 	alias(libs.plugins.android.application)
 	alias(libs.plugins.kotlin.android)
 	alias(libs.plugins.kotlin.compose)
-	id("com.google.devtools.ksp") version libs.versions.kotlin
+
+	id("com.google.devtools.ksp") version "2.3.2"
+	id("com.google.dagger.hilt.android") version "2.58"
 }
 
 fun appVersionName(): String {
@@ -98,8 +101,12 @@ dependencies {
 	implementation(libs.gson)
 	implementation(libs.androidx.compose.animation)
 	implementation(libs.androidx.navigation.testing)
+
 	implementation("io.github.raamcosta.compose-destinations:core:2.3.0")
 	ksp("io.github.raamcosta.compose-destinations:ksp:2.3.0")
+	implementation(libs.hilt.android)
+	ksp(libs.hilt.android.compiler)
+	implementation(libs.androidx.hilt.navigation.compose)
 
 	testImplementation(libs.junit)
 	androidTestImplementation(libs.androidx.junit)
