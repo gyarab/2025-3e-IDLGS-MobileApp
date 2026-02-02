@@ -14,4 +14,9 @@
     <string name="reset_link_sent_to">Reset link sent to</string>
     <string name="email_not_found">Email not found</string>
     <string name="send_reset_link">Send Reset Link</string>
+	<string name="about">About</string>
+    <string name="you_re_logged_in">You’re logged in!</string>
+    <string name="name_label">Name</string>
+    <string name="email_label">Email</string>
+    <string name="log_out">Log Out</string>
 </resources>
