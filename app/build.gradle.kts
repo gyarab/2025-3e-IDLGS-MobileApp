@@ -1,5 +1,5 @@
 
-import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
+import com.android.build.api.dsl.ApplicationDefaultConfig
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -19,7 +19,7 @@ fun appVersionName(): String {
 	return "a$date"
 }
 
-fun BaseAppModuleExtension.buildConfigFromLocalProperties(vararg keys: String) {
+fun ApplicationDefaultConfig.buildConfigFromLocalProperties(vararg keys: String) {
 	val properties = Properties()
 	val localPropertiesFile = project.rootProject.file("local.properties")
 	if (localPropertiesFile.exists())
@@ -33,7 +33,7 @@ fun BaseAppModuleExtension.buildConfigFromLocalProperties(vararg keys: String) {
 			rawValue.toIntOrNull() != null -> "int" to rawValue
 			else -> "String" to rawValue
 		}
-		defaultConfig.buildConfigField(type, key, value)
+		buildConfigField(type, key, value)
 	}
 }
 
@@ -45,9 +45,9 @@ android {
 
 	defaultConfig {
 		applicationId = namespace
-		minSdk = 24
+		minSdk = 23
 		targetSdk = 36
-		versionCode = 2
+		versionCode = 3
 		versionName = appVersionName()
 
 		testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -97,10 +97,10 @@ dependencies {
 	implementation(libs.androidx.compose.material.icons.extended)
 
 	implementation(libs.lifecycle.viewmodel.compose)
-	implementation(libs.okhttp)
-	implementation(libs.gson)
 	implementation(libs.androidx.compose.animation)
 	implementation(libs.androidx.navigation.testing)
+	implementation(libs.okhttp)
+	implementation(libs.gson)
 
 	implementation("io.github.raamcosta.compose-destinations:core:2.3.0")
 	ksp("io.github.raamcosta.compose-destinations:ksp:2.3.0")
