@@ -44,11 +44,14 @@ fun HomeScreen(navigator: DestinationsNavigator) {
 			isBold = true
 		)
 		AboutScreen()
+	}
+	Box(Modifier.fillMaxSize()) {
 		IconButton(
-			onClick = { navigator.navigate(ChatDialogDestination)},
-			modifier= Modifier
+			onClick = { navigator.navigate(ChatDialogDestination) },
+			modifier = Modifier
+				.padding(12.dp)
 				.size(48.dp)
-				.align(Alignment.End)
+				.align(Alignment.BottomEnd)
 				.background(
 					color = MaterialTheme.colorScheme.primary,
 					shape = CircleShape
