@@ -6,8 +6,10 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Password
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material.icons.outlined.Email
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -63,6 +65,12 @@ fun LoginScreen(
 				.fillMaxWidth()
 				.focusRequester(focusRequester),
 			singleLine = true,
+			leadingIcon = {
+				Icon(
+					Icons.Outlined.Email,
+					contentDescription = null
+				)
+			},
 			keyboardOptions = KeyboardOptions(
 				keyboardType = KeyboardType.Email,
 				imeAction = ImeAction.Next
@@ -79,6 +87,12 @@ fun LoginScreen(
 			supportingText = { viewModel.passwordError?.let { Text(it) } },
 			modifier = Modifier.fillMaxWidth(),
 			singleLine = true,
+			leadingIcon = {
+				Icon(
+					Icons.Default.Password,
+					contentDescription = null
+				)
+			},
 			trailingIcon = {
 				IconButton(onClick = { showPassword.value = !showPassword.value }) {
 					Icon(
@@ -92,17 +106,17 @@ fun LoginScreen(
 				imeAction = ImeAction.Go
 			),
 			keyboardActions = KeyboardActions(
-				onGo = { viewModel.performLogin() }
+				onGo = { viewModel.performLogin(navigator) }
 			)
 		)
 		Spacer(modifier = Modifier.height(8.dp))
 
 		Button(
-			onClick = viewModel::performLogin,
+			onClick = { viewModel.performLogin(navigator) },
 			enabled = !viewModel.isLoading && viewModel.email.text.isNotEmpty(),
 			modifier = Modifier.fillMaxWidth(.9f)
 		) {
-			LoadingCircle(viewModel.isLoading, R.string.login)
+			LoadingCircle(viewModel.isLoading, R.string.log_in)
 		}
 
 		TextButton(

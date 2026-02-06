@@ -4,6 +4,8 @@ import android.content.res.Configuration
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Email
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -49,7 +51,7 @@ fun ForgotPasswordScreen(
 		)
 		Text(
 			text = "Enter your email to receive a reset link.",
-			style = MaterialTheme.typography.bodyMedium,
+			style = MaterialTheme.typography.bodyLarge,
 			modifier = Modifier.padding(vertical = 16.dp)
 		)
 	}
@@ -66,6 +68,12 @@ fun ForgotPasswordScreen(
 				.fillMaxWidth()
 				.focusRequester(focusRequester),
 			singleLine = true,
+			leadingIcon = {
+				Icon(
+					Icons.Default.Email,
+					contentDescription = null
+				)
+			},
 			keyboardOptions = KeyboardOptions(
 				keyboardType = KeyboardType.Email,
 				imeAction = ImeAction.Go
