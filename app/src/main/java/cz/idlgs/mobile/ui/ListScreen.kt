@@ -21,7 +21,18 @@ import cz.idlgs.mobile.nav.OverviewNavGraph
 @Destination<OverviewNavGraph>(start = true)
 @Composable
 fun ListScreen(modifier: Modifier = Modifier) {
-	val colors = remember { listOf(Color.Red, Color.Gray, Color.Yellow, Color.Green, Color.Blue, Color.Magenta)}
+	val mods = remember {
+		List(100) {
+			val colors = listOf(
+				Color.Gray, Color.Red, Color.Yellow, Color.Green, Color.Blue, Color.Magenta
+			)
+			Pair(
+				colors.random(),
+				(24..60).random().dp
+			)
+		}
+	}
+
 	LazyVerticalStaggeredGrid(
 		columns = StaggeredGridCells.Adaptive(260.dp),
 	) {
@@ -30,9 +41,9 @@ fun ListScreen(modifier: Modifier = Modifier) {
 				"Item ${it + 1}",
 				modifier = modifier
 					.padding(8.dp)
-					.background(colors.random(), RoundedCornerShape(CornerSize(12.dp)))
+					.background(mods[it].first, RoundedCornerShape(CornerSize(12.dp)))
 					.padding(8.dp)
-					.height((24..60).random().dp),
+					.height(mods[it].second),
 				style = LocalTextStyle.current.copy(fontWeight = FontWeight.Bold),
 			)
 		}
