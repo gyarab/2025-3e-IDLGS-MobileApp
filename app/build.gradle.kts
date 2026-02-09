@@ -7,11 +7,9 @@ import java.util.Properties
 
 plugins {
 	alias(libs.plugins.android.application)
-	alias(libs.plugins.kotlin.android)
 	alias(libs.plugins.kotlin.compose)
-
-	id("com.google.devtools.ksp") version "2.3.2"
-	id("com.google.dagger.hilt.android") version "2.58"
+	alias(libs.plugins.ksp)
+	alias(libs.plugins.hilt)
 }
 
 fun appVersionName(): String {
@@ -72,17 +70,16 @@ android {
 		sourceCompatibility = JavaVersion.VERSION_11
 		targetCompatibility = JavaVersion.VERSION_11
 	}
-	kotlin {
-		compilerOptions {
-			jvmTarget.set(JvmTarget.JVM_11)
-		}
-	}
 	buildFeatures {
 		compose = true
 		buildConfig = true
 	}
 }
-
+kotlin {
+	compilerOptions {
+		jvmTarget.set(JvmTarget.JVM_11)
+	}
+}
 dependencies {
 	implementation(libs.androidx.core.ktx)
 	implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -93,12 +90,12 @@ dependencies {
 	implementation(libs.androidx.compose.ui.tooling.preview)
 	implementation(libs.androidx.compose.material3)
 	implementation(libs.androidx.compose.material3.adaptive.navigation.suite)
-	implementation(libs.androidx.datastore.preferences)
-	implementation(libs.androidx.compose.material.icons.extended)
 
+	implementation(libs.androidx.compose.material.icons.extended)
 	implementation(libs.lifecycle.viewmodel.compose)
 	implementation(libs.androidx.compose.animation)
 	implementation(libs.androidx.navigation.testing)
+	implementation(libs.androidx.datastore.preferences)
 	implementation(libs.okhttp)
 	implementation(libs.gson)
 

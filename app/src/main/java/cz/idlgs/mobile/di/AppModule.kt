@@ -1,6 +1,6 @@
 package cz.idlgs.mobile.di
 
-import cz.idlgs.mobile.data.repository.AuthRepositoryReal
+import cz.idlgs.mobile.data.repository.AuthRepositoryImpl
 import cz.idlgs.mobile.domain.repository.AuthRepository
 import dagger.Module
 import dagger.Provides
@@ -14,5 +14,5 @@ object AppModule {
 
 	@Provides
 	@Singleton
-	fun provideAuthRepository(): AuthRepository = AuthRepositoryReal()
+	fun provideAuthRepository(): AuthRepository = AuthRepositoryImpl()
 }
