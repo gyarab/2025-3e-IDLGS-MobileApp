@@ -8,6 +8,9 @@ import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ramcosta.composedestinations.generated.NavGraphs
+import com.ramcosta.composedestinations.generated.destinations.ListScreenDestination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import cz.idlgs.mobile.R
 import cz.idlgs.mobile.domain.repository.AuthRepository
 import cz.idlgs.mobile.utils.UiEventManager
@@ -19,7 +22,7 @@ import javax.inject.Inject
 @HiltViewModel
 class AuthViewModel @Inject constructor(
 	private val authRepository: AuthRepository,
-	private val uiEventManager: UiEventManager
+	private val uiEventManager: UiEventManager,
 ) : ViewModel() {
 	var email by mutableStateOf(TextFieldValue(""))
 		private set
@@ -55,7 +58,7 @@ class AuthViewModel @Inject constructor(
 	private val emailRegex = Patterns.EMAIL_ADDRESS.toRegex()
 	private fun isEmailFormatValid(email: String) = email.matches(emailRegex)
 
-	fun performLogin() {
+	fun performLogin(navigator: DestinationsNavigator) {
 		viewModelScope.launch {
 			emailError = null
 			passwordError = null
@@ -70,10 +73,15 @@ class AuthViewModel @Inject constructor(
 			}
 
 			isLoading = true
-			delay(1500)
 
 			val result = authRepository.login(email.text, password)
-			if (result.isSuccess) uiEventManager.showToast("Logged in")
+			if (result.isSuccess) {
+				navigator.navigate(ListScreenDestination) {
+					popUpTo(NavGraphs.root) { inclusive = true }
+					launchSingleTop = true
+				}
+				uiEventManager.showSnackbar("Logged in")
+			}
 			else uiEventManager.showSnackbar("Login failed")
 
 			isLoading = false
