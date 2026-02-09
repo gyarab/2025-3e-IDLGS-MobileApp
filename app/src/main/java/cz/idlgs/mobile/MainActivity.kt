@@ -6,12 +6,11 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.Icon
-import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
@@ -19,46 +18,48 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import androidx.compose.ui.unit.sp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.generated.NavGraphs
-import com.ramcosta.composedestinations.generated.destinations.ForgotPasswordScreenDestination
-import com.ramcosta.composedestinations.generated.destinations.LoginScreenDestination
-import com.ramcosta.composedestinations.generated.destinations.ProfileScreenDestination
 import com.ramcosta.composedestinations.navigation.DependenciesContainerBuilder
-import com.ramcosta.composedestinations.navigation.dependency
 import com.ramcosta.composedestinations.spec.Direction
 import com.ramcosta.composedestinations.spec.TypedDestinationSpec
 import com.ramcosta.composedestinations.utils.rememberDestinationsNavigator
 import cz.idlgs.mobile.nav.guestDestinations
 import cz.idlgs.mobile.nav.userDestinations
-import cz.idlgs.mobile.repository.AuthRepository
 import cz.idlgs.mobile.ui.theme.IDLGSTheme
 import cz.idlgs.mobile.ui.theme.Typography
+import cz.idlgs.mobile.utils.UiEvent
+import cz.idlgs.mobile.utils.UiEventManager
 import cz.idlgs.mobile.utils.UiUtils
 import cz.idlgs.mobile.utils.Utils.showToast
-import cz.idlgs.mobile.viewmodel.*
+import cz.idlgs.mobile.viewmodel.SessionViewModel
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+	@Inject
+	lateinit var uiEventManager: UiEventManager
+
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 		enableEdgeToEdge()
 		setContent {
-			IDLGSTheme { IDLGSApp() }
+			IDLGSTheme { IDLGSApp(uiEventManager) }
 		}
 	}
 }
 
 @PreviewScreenSizes
 @Composable
-fun IDLGSApp() {
-	val authRepository = AuthRepository()
-	val authViewModel: AuthViewModel = viewModel(factory = AuthVMFactory(authRepository))
-	val profileViewModel: ProfileViewModel = viewModel(factory = ProfileVMFactory(authRepository))
-	val isLoggedIn by authViewModel.isLoggedIn.collectAsStateWithLifecycle()
+fun IDLGSApp(uiEventManager: UiEventManager? = null) {
+	val sessionViewModel: SessionViewModel = hiltViewModel()
+	val isLoggedIn by sessionViewModel.isLoggedIn.collectAsStateWithLifecycle()
 	val currentDestinations = if (isLoggedIn) userDestinations else guestDestinations
 
 	val context = LocalContext.current
@@ -71,13 +72,21 @@ fun IDLGSApp() {
 	val destination = navBackStackEntry?.destination
 	fun isSameDestination(it: Direction) = destination?.route == it.route
 
-	LaunchedEffect(authViewModel.uiEvent) {
-		authViewModel.uiEvent.collect { event ->
-			when (event) {
-				is AuthUiEvent.ShowMessage -> context.showToast(event.message)
-				is AuthUiEvent.ShowSnackbar -> snackbarHostState.showSnackbar(event.message)
+	uiEventManager?.let {
+		LaunchedEffect(it.events) {
+			it.events.collect { event ->
+				when (event) {
+					is UiEvent.ShowToast -> context.showToast(event.message.asString(context))
+					is UiEvent.ShowSnackbar -> snackbarHostState.showSnackbar(
+						event.message.asString(context)
+					)
+				}
 			}
 		}
+	}
+
+	LaunchedEffect(Unit) {
+		if (BuildConfig.DEBUG) context.showToast("Version ${BuildConfig.VERSION_NAME}")
 	}
 
 	val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
@@ -117,18 +126,16 @@ fun IDLGSApp() {
 			}
 		},
 	) {
-		DestinationsNavHost(
-			navController = navController,
-			navGraph = NavGraphs.root,
-			dependenciesContainerBuilder = {
-				when {
-					isIn(LoginScreenDestination, ForgotPasswordScreenDestination) ->
-						dependency(authViewModel)
-					isIn(ProfileScreenDestination) ->
-						dependency(profileViewModel)
-				}
-			},
-		)
+		Box(modifier = Modifier.fillMaxSize()) {
+			DestinationsNavHost(
+				navController = navController,
+				navGraph = NavGraphs.root,
+			)
+			SnackbarHost(
+				hostState = snackbarHostState,
+				modifier = Modifier.align(Alignment.BottomCenter)
+			)
+		}
 	}
 }
 
