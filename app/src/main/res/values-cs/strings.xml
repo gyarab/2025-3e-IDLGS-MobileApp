@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="app_name">IDLGS</string>
+	<string name="home">Domů</string>
+	<string name="favorites">Oblíbené</string>
+	<string name="profile">Profil</string>
+	<string name="not_yet_implemented">Zatím neimplementováno</string>
+	<string name="email">E-mail</string>
+	<string name="log_in">Přihlásit se</string>
+	<string name="password">Heslo</string>
+	<string name="login">Přihlášení</string>
+	<string name="back_to_login">Zpět k přihlášení</string>
+	<string name="invalid_email_format">Neplatný formát e-mailu</string>
+	<string name="reset_link_sent_to">Odkaz pro obnovení hesla je poslán na</string>
+	<string name="about">O nás</string>
+</resources>
