@@ -3,6 +3,7 @@
 
 .gradle/
 build/
+*.aab
 # temp ↓
 xml/
 *.pro
