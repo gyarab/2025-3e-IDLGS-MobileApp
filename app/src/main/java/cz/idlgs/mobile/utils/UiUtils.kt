@@ -37,7 +37,7 @@ object UiUtils {
 			Row(
 				modifier = modifier
 					.fillMaxSize()
-					.padding(16.dp),
+					.padding(horizontal = 16.dp),
 				verticalAlignment = Alignment.CenterVertically
 			) {
 				Column(
@@ -60,7 +60,7 @@ object UiUtils {
 			Column(
 				modifier = modifier
 					.fillMaxSize()
-					.padding(16.dp)
+					.padding(horizontal = 16.dp)
 					.verticalScroll(scrollState),
 				horizontalAlignment = Alignment.CenterHorizontally,
 				verticalArrangement = Arrangement.Center

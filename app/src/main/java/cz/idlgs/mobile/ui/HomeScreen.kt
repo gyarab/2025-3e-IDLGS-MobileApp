@@ -8,12 +8,14 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Assistant
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.ramcosta.composedestinations.annotation.Destination
@@ -21,7 +23,6 @@ import com.ramcosta.composedestinations.generated.destinations.ChatDialogDestina
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
 import cz.idlgs.mobile.BuildConfig
-import cz.idlgs.mobile.Greeting
 import cz.idlgs.mobile.nav.HomeNavGraph
 import cz.idlgs.mobile.ui.theme.IDLGSTheme
 import cz.idlgs.mobile.utils.Utils.openLinkInBrowser
@@ -38,11 +39,6 @@ fun HomeScreen(navigator: DestinationsNavigator) {
 		horizontalAlignment = Alignment.CenterHorizontally,
 		verticalArrangement = Arrangement.Center
 	) {
-		Greeting(
-			name = if (BuildConfig.DEBUG) "Dev" else "User",
-			fontSize = 20,
-			isBold = true
-		)
 		AboutScreen()
 	}
 	Box(Modifier.fillMaxSize()) {
@@ -65,7 +61,6 @@ fun HomeScreen(navigator: DestinationsNavigator) {
 		}
 	}
 }
-
 @Composable
 fun AboutScreen() {
 	Column(
@@ -76,21 +71,70 @@ fun AboutScreen() {
 		verticalArrangement = Arrangement.Center,
 	) {
 		Text(
-			text = "This app is an extension of the IDLGS platform that helps you stay connected to your school life in one place.",
-			style = MaterialTheme.typography.bodyLarge
+			text = buildString {
+				append("Welcome to IDLGS Mobile")
+				if (BuildConfig.DEBUG) append(", Dev")
+			},
+			style = MaterialTheme.typography.headlineMedium,
+			fontWeight = FontWeight.Bold,
+			color = MaterialTheme.colorScheme.primary,
 		)
-		Spacer(modifier = Modifier.height(32.dp))
-		Text(
-			text = "It securely loads your academic data using the IDLGS API, ensuring fast and reliable access.",
-			style = MaterialTheme.typography.bodyLarge
+
+		Spacer(modifier = Modifier.height(24.dp))
+
+		InfoCard(
+			icon = Icons.Default.School,
+			title = "Stay Connected",
+			description = "The ultimate extension of the IDLGS platform, keeping your school life organized in one place."
 		)
-		Spacer(modifier = Modifier.height(32.dp))
-		Text(
-			text = "IDLGS is an all-in-one digital learning and grading system where you can access study materials, track assignments, and view grades—all designed to make learning simpler and more organized.",
-			style = MaterialTheme.typography.bodyLarge
+
+		InfoCard(
+			icon = Icons.Default.Lock,
+			title = "Secure & Fast",
+			description = "Real-time data syncing via the IDLGS API ensures your academic records are always up to date."
 		)
-		Spacer(modifier = Modifier.height(32.dp))
+
+		InfoCard(
+			icon = Icons.Default.AutoGraph,
+			title = "Track Your Progress",
+			description = "Access study materials, track assignments, and view grades in a simplified digital environment."
+		)
+
+		Spacer(modifier = Modifier.height(16.dp))
 		LinkToUrlButton(BuildConfig.WEBSITE_URL, "IDLGS platform")
+	}
+}
+
+@Composable
+fun InfoCard(icon: ImageVector, title: String, description: String) {
+	Card(
+		modifier = Modifier
+			.fillMaxWidth()
+			.padding(vertical = 8.dp),
+		colors = CardDefaults.cardColors(
+			containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
+		)
+	) {
+		Row(
+			modifier = Modifier.padding(16.dp),
+			verticalAlignment = Alignment.CenterVertically
+		) {
+			Icon(
+				imageVector = icon,
+				contentDescription = null,
+				tint = MaterialTheme.colorScheme.primary,
+				modifier = Modifier.size(32.dp)
+			)
+			Spacer(modifier = Modifier.width(16.dp))
+			Column {
+				Text(
+					text = title,
+					style = MaterialTheme.typography.titleMedium,
+					fontWeight = FontWeight.Bold
+				)
+				Text(text = description, style = MaterialTheme.typography.bodyMedium)
+			}
+		}
 	}
 }
 
