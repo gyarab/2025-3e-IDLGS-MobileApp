@@ -16,45 +16,58 @@ class LoginTest {
 
 	@Test
 	fun loginFlow() {
-		// Profile
-		val profileText = context.getString(R.string.profile)
-		composeTestRule.onNodeWithText(profileText).performClick()
+
+		val loginText = context.getString(R.string.login)
+		composeTestRule.onNodeWithText(loginText).performClick()
 
 		// Wait for Login screen
 		val loginButtonText = context.getString(R.string.log_in)
-		composeTestRule.waitUntil(timeoutMillis = 2000) {
-			composeTestRule.onAllNodesWithText(loginButtonText).fetchSemanticsNodes().isNotEmpty()
+		composeTestRule.waitUntil(2000) {
+			composeTestRule.onAllNodesWithText(loginButtonText)
+				.fetchSemanticsNodes().isNotEmpty()
 		}
 
-		// Enter Email
+		// Enter Email & Password
 		val emailLabel = context.getString(R.string.email)
-		composeTestRule.onNodeWithText(emailLabel).performTextInput("user@example.com")
-
-		// Enter Password
 		val passwordLabel = context.getString(R.string.password)
+		composeTestRule.onNodeWithText(emailLabel).performTextInput("user@example.com")
 		composeTestRule.onNodeWithText(passwordLabel).performTextInput("password123")
 
 		// Click Login
 		composeTestRule.onNodeWithText(loginButtonText).performClick()
 
 		// No errors?
-		val invalidEmailError = context.getString(R.string.invalid_email_format)
-		val emailNotFoundError = context.getString(R.string.email_not_found)
+		val invalidEmailText = context.getString(R.string.invalid_email_format)
+		val emailNotFoundText = context.getString(R.string.email_not_found)
+		composeTestRule.onNodeWithText(invalidEmailText).assertDoesNotExist()
+		composeTestRule.onNodeWithText(emailNotFoundText).assertDoesNotExist()
 
-		composeTestRule.onNodeWithText(invalidEmailError).assertDoesNotExist()
-		composeTestRule.onNodeWithText(emailNotFoundError).assertDoesNotExist()
-		Thread.sleep(1000)
+		composeTestRule.waitUntil(3000) {
+			composeTestRule.onAllNodesWithText(
+				"Item", substring = true
+			).fetchSemanticsNodes().isNotEmpty()
+		}
+
+		val profileText = context.getString(R.string.profile)
+		val logoutText = context.getString(R.string.log_out)
+		composeTestRule.onNodeWithText(profileText).assertIsDisplayed().performClick()
+		composeTestRule.onNodeWithText(logoutText).assertIsDisplayed().performClick()
 	}
 	@Test
 	fun forgotPasswordFlow() {
-		// Profile
-		val profileText = context.getString(R.string.profile)
-		composeTestRule.onNodeWithText(profileText).performClick()
+
+		val loginText = context.getString(R.string.login)
+		composeTestRule.waitUntil(timeoutMillis = 2000) {
+			composeTestRule.onAllNodesWithText(loginText)
+				.fetchSemanticsNodes().isNotEmpty()
+		}
+		composeTestRule.onNodeWithText(loginText).assertIsDisplayed().performClick()
 
 		// Wait for Login screen
 		val loginButtonText = context.getString(R.string.log_in)
 		composeTestRule.waitUntil(timeoutMillis = 2000) {
-			composeTestRule.onAllNodesWithText(loginButtonText).fetchSemanticsNodes().isNotEmpty()
+			composeTestRule.onAllNodesWithText(loginButtonText)
+				.fetchSemanticsNodes().isNotEmpty()
 		}
 
 		// Click Login
@@ -66,15 +79,20 @@ class LoginTest {
 		composeTestRule.onNodeWithText(emailLabel).performTextInput("user@example.com")
 
 		// No errors?
-		val invalidEmailError = context.getString(R.string.invalid_email_format)
-		val emailNotFoundError = context.getString(R.string.email_not_found)
-
-		composeTestRule.onNodeWithText(invalidEmailError).assertDoesNotExist()
-		composeTestRule.onNodeWithText(emailNotFoundError).assertDoesNotExist()
+		val invalidEmailText = context.getString(R.string.invalid_email_format)
+		val emailNotFoundText = context.getString(R.string.email_not_found)
+		composeTestRule.onNodeWithText(invalidEmailText).assertDoesNotExist()
+		composeTestRule.onNodeWithText(emailNotFoundText).assertDoesNotExist()
 
 		// Click Send Reset Link
 		val resetPasswordText = context.getString(R.string.send_reset_link)
 		composeTestRule.onNodeWithText(resetPasswordText).performClick()
-		Thread.sleep(1000)
+
+		// Wait for Message
+		val notYetImplementedText = context.getString(R.string.not_yet_implemented)
+		composeTestRule.waitUntil(3000) {
+			composeTestRule.onAllNodesWithText(notYetImplementedText)
+				.fetchSemanticsNodes().isNotEmpty()
+		}
 	}
 }
