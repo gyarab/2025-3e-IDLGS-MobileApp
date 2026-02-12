@@ -17,7 +17,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.PreviewScreenSizes
-import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -28,8 +27,7 @@ import com.ramcosta.composedestinations.navigation.DependenciesContainerBuilder
 import com.ramcosta.composedestinations.spec.Direction
 import com.ramcosta.composedestinations.spec.TypedDestinationSpec
 import com.ramcosta.composedestinations.utils.rememberDestinationsNavigator
-import cz.idlgs.mobile.nav.guestDestinations
-import cz.idlgs.mobile.nav.userDestinations
+import cz.idlgs.mobile.nav.Destinations
 import cz.idlgs.mobile.ui.theme.IDLGSTheme
 import cz.idlgs.mobile.ui.theme.Typography
 import cz.idlgs.mobile.utils.UiEvent
@@ -60,7 +58,7 @@ class MainActivity : ComponentActivity() {
 fun IDLGSApp(uiEventManager: UiEventManager? = null) {
 	val sessionViewModel: SessionViewModel = hiltViewModel()
 	val isLoggedIn by sessionViewModel.isLoggedIn.collectAsStateWithLifecycle()
-	val currentDestinations = if (isLoggedIn) userDestinations else guestDestinations
+	val currentDestinations = if (isLoggedIn) Destinations.user else Destinations.guest
 
 	val context = LocalContext.current
 	val configuration = LocalConfiguration.current
@@ -77,9 +75,8 @@ fun IDLGSApp(uiEventManager: UiEventManager? = null) {
 			it.events.collect { event ->
 				when (event) {
 					is UiEvent.ShowToast -> context.showToast(event.message.asString(context))
-					is UiEvent.ShowSnackbar -> snackbarHostState.showSnackbar(
-						event.message.asString(context)
-					)
+					is UiEvent.ShowSnackbar ->
+						snackbarHostState.showSnackbar(event.message.asString(context))
 				}
 			}
 		}
@@ -109,8 +106,7 @@ fun IDLGSApp(uiEventManager: UiEventManager? = null) {
 				item(
 					icon = {
 						Icon(
-							it.icon,
-							stringResource(it.labelRes)
+							it.icon, stringResource(it.labelRes)
 						)
 					},
 					label = { Text(stringResource(it.labelRes)) },
@@ -147,13 +143,11 @@ fun Greeting(
 	name: String,
 	modifier: Modifier = Modifier,
 	isBold: Boolean = false,
-	fontSize: Int = 16
 ) {
 	Text(
 		text = "Hello $name!",
 		modifier = modifier,
 		fontWeight = if (isBold) FontWeight.Bold else FontWeight.Normal,
-		fontSize = fontSize.sp,
 		style = Typography.bodyLarge
 	)
 }

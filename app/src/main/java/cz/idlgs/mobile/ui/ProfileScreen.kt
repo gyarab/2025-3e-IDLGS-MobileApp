@@ -20,11 +20,11 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
 import cz.idlgs.mobile.R
-import cz.idlgs.mobile.nav.OverviewNavGraph
+import cz.idlgs.mobile.nav.UserNavGraph
 import cz.idlgs.mobile.ui.theme.IDLGSTheme
 import cz.idlgs.mobile.viewmodel.ProfileViewModel
 
-@Destination<OverviewNavGraph>
+@Destination<UserNavGraph>
 @Composable
 fun ProfileScreen(
 	navigator: DestinationsNavigator,

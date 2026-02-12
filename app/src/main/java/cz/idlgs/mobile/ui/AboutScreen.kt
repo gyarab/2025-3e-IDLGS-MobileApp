@@ -23,13 +23,13 @@ import com.ramcosta.composedestinations.generated.destinations.ChatDialogDestina
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
 import cz.idlgs.mobile.BuildConfig
-import cz.idlgs.mobile.nav.HomeNavGraph
+import cz.idlgs.mobile.nav.GuestNavGraph
 import cz.idlgs.mobile.ui.theme.IDLGSTheme
 import cz.idlgs.mobile.utils.Utils.openLinkInBrowser
 
-@Destination<HomeNavGraph>(start = true)
+@Destination<GuestNavGraph>(start = true)
 @Composable
-fun HomeScreen(navigator: DestinationsNavigator) {
+fun AboutScreen(navigator: DestinationsNavigator) {
 	val scrollState = rememberScrollState()
 	Column(
 		modifier = Modifier
@@ -39,7 +39,7 @@ fun HomeScreen(navigator: DestinationsNavigator) {
 		horizontalAlignment = Alignment.CenterHorizontally,
 		verticalArrangement = Arrangement.Center
 	) {
-		AboutScreen()
+		AboutDetails()
 	}
 	Box(Modifier.fillMaxSize()) {
 		IconButton(
@@ -62,7 +62,7 @@ fun HomeScreen(navigator: DestinationsNavigator) {
 	}
 }
 @Composable
-fun AboutScreen() {
+fun AboutDetails() {
 	Column(
 		modifier = Modifier
 			.fillMaxSize()
@@ -157,8 +157,8 @@ fun LinkToUrlButton(
 
 @Preview(showBackground = true)
 @Composable
-fun HomeScreenPreview() {
+fun AboutScreenPreview() {
 	IDLGSTheme {
-		HomeScreen(EmptyDestinationsNavigator)
+		AboutScreen(EmptyDestinationsNavigator)
 	}
 }
