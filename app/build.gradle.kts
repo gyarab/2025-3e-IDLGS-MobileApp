@@ -45,7 +45,7 @@ android {
 		applicationId = namespace
 		minSdk = 23
 		targetSdk = 36
-		versionCode = 3
+		versionCode = 4
 		versionName = appVersionName()
 
 		testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -67,8 +67,8 @@ android {
 		}
 	}
 	compileOptions {
-		sourceCompatibility = JavaVersion.VERSION_11
-		targetCompatibility = JavaVersion.VERSION_11
+		sourceCompatibility = JavaVersion.VERSION_21
+		targetCompatibility = JavaVersion.VERSION_21
 	}
 	buildFeatures {
 		compose = true
@@ -77,7 +77,7 @@ android {
 }
 kotlin {
 	compilerOptions {
-		jvmTarget.set(JvmTarget.JVM_11)
+		jvmTarget.set(JvmTarget.JVM_21)
 	}
 }
 dependencies {
@@ -113,3 +113,7 @@ dependencies {
 	debugImplementation(libs.androidx.compose.ui.tooling)
 	debugImplementation(libs.androidx.compose.ui.test.manifest)
 }
+//ksp {
+//	arg("room.schemaLocation", "$projectDir/schemas")
+//	arg("compose-destinations.mode", "destinations")
+//}
