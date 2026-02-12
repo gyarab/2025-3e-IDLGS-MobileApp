@@ -2,9 +2,7 @@ package cz.idlgs.mobile.nav
 
 import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountBox
-import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.ramcosta.composedestinations.generated.destinations.*
@@ -17,11 +15,14 @@ data class NavDestination(
 	val direction: Direction,
 )
 
-val guestDestinations = listOf(
-	NavDestination(R.string.about, Icons.Outlined.Info, HomeScreenDestination),
-	NavDestination(R.string.login, Icons.Default.AccountBox, LoginScreenDestination),
-)
-val userDestinations = listOf(
-	NavDestination(R.string.home, Icons.Default.Home, ListScreenDestination),
-	NavDestination(R.string.profile, Icons.Default.AccountCircle, ProfileScreenDestination),
-)
+object Destinations {
+	val guest = listOf(
+		NavDestination(R.string.login, Icons.Default.AccountBox, LoginScreenDestination),
+		NavDestination(R.string.about, Icons.Outlined.Info, HomeScreenDestination),
+	)
+	val user = listOf(
+		NavDestination(R.string.home, Icons.Default.Home, ListScreenDestination),
+		NavDestination(R.string.profile, Icons.Default.AccountCircle, ProfileScreenDestination),
+		NavDestination(R.string.settings, Icons.Default.Settings, SettingsScreenDestination),
+	)
+}
