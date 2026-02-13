@@ -7,10 +7,22 @@
 	<string name="not_yet_implemented">Zatím neimplementováno</string>
 	<string name="email">E-mail</string>
 	<string name="log_in">Přihlásit se</string>
+	<string name="forgot_password">Zapomněli jste heslo?</string>
 	<string name="password">Heslo</string>
 	<string name="login">Přihlášení</string>
 	<string name="back_to_login">Zpět k přihlášení</string>
 	<string name="invalid_email_format">Neplatný formát e-mailu</string>
 	<string name="reset_link_sent_to">Odkaz pro obnovení hesla je poslán na</string>
+	<string name="send_reset_link">Odeslat odkaz pro resetování</string>
 	<string name="about">O nás</string>
+	<string name="email_not_found">E-mail nebyl nalezen</string>
+	<string name="you_re_logged_in">Jste přihlášeni!</string>
+	<string name="name_label">Jméno</string>
+	<string name="email_label">E-mail</string>
+	<string name="log_out">Odhlásit se</string>
+	<string name="settings">Nastavení</string>
+	<string name="save">Uložit</string>
+	<string name="cancel">Zrušit</string>
+	<string name="language">Jazyk</string>
+	<string name="change_language">Změnit jazyk</string>
 </resources>
