@@ -5,7 +5,6 @@
 build/
 *.aab
 # temp ↓
-xml/
 *.pro
 
 local.properties
