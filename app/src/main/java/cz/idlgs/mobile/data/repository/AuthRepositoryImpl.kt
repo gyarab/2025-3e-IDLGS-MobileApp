@@ -11,7 +11,7 @@ class AuthRepositoryImpl : AuthRepository {
 	override val isLoggedIn = _isLoggedIn.asStateFlow()
 
 	override suspend fun login(email: String, password: String): Result<Unit> {
-		delay(2000)
+		delay(200)
 		_isLoggedIn.value = true
 		println("AuthRepositoryImpl isLoggedIn: ${_isLoggedIn.value}")
 		return try {

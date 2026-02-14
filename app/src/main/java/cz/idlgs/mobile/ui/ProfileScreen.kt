@@ -22,13 +22,13 @@ import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
 import cz.idlgs.mobile.R
 import cz.idlgs.mobile.nav.UserNavGraph
 import cz.idlgs.mobile.ui.theme.IDLGSTheme
-import cz.idlgs.mobile.viewmodel.ProfileViewModel
+import cz.idlgs.mobile.viewmodel.SettingsViewModel
 
 @Destination<UserNavGraph>
 @Composable
 fun ProfileScreen(
 	navigator: DestinationsNavigator,
-	viewModel: ProfileViewModel = hiltViewModel(),
+	viewModel: SettingsViewModel = hiltViewModel(),
 ) {
 	val scrollState = rememberScrollState()
 	var showLogoutDialog by rememberSaveable { mutableStateOf(false) }

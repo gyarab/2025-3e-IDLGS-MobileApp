@@ -89,15 +89,14 @@ fun LoginScreen(
 			singleLine = true,
 			leadingIcon = {
 				Icon(
-					Icons.Default.Password,
-					contentDescription = null
+					Icons.Default.Password, null
 				)
 			},
 			trailingIcon = {
 				IconButton(onClick = { showPassword.value = !showPassword.value }) {
 					Icon(
 						if (showPassword.value) Icons.Default.Visibility else Icons.Default.VisibilityOff,
-						contentDescription = null
+						null
 					)
 				}
 			},
@@ -106,13 +105,13 @@ fun LoginScreen(
 				imeAction = ImeAction.Go
 			),
 			keyboardActions = KeyboardActions(
-				onGo = { viewModel.performLogin(navigator) }
+				onGo = { viewModel.performLogin(navigator).also { focusRequester.freeFocus() } }
 			)
 		)
 		Spacer(modifier = Modifier.height(8.dp))
 
 		Button(
-			onClick = { viewModel.performLogin(navigator) },
+			onClick = { viewModel.performLogin(navigator).also { focusRequester.freeFocus() } },
 			enabled = !viewModel.isLoading && viewModel.email.text.isNotEmpty(),
 			modifier = Modifier.fillMaxWidth(.9f)
 		) {

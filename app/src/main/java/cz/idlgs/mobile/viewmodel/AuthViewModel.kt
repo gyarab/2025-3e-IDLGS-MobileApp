@@ -37,7 +37,7 @@ class AuthViewModel @Inject constructor(
 		private set
 
 	fun onEmailChange(newValue: TextFieldValue) {
-		email = newValue.copy(text = newValue.text.trim())
+		email = newValue
 		emailError = null
 	}
 
@@ -62,6 +62,7 @@ class AuthViewModel @Inject constructor(
 		viewModelScope.launch {
 			emailError = null
 			passwordError = null
+			email = email.copy(text = email.text.trim())
 
 			if (!isEmailFormatValid(email.text)) {
 				emailError = "Invalid email format"

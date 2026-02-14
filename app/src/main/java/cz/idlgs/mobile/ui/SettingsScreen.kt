@@ -34,14 +34,14 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import cz.idlgs.mobile.BuildConfig
 import cz.idlgs.mobile.R
 import cz.idlgs.mobile.nav.UserNavGraph
-import cz.idlgs.mobile.viewmodel.ProfileViewModel
+import cz.idlgs.mobile.viewmodel.SettingsViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Destination<UserNavGraph>
 @Composable
 fun SettingsScreen(
 	navigator: DestinationsNavigator,
-	viewModel: ProfileViewModel = hiltViewModel(),
+	viewModel: SettingsViewModel = hiltViewModel(),
 ) {
 	val scrollState = rememberScrollState()
 	var showLogoutDialog by rememberSaveable { mutableStateOf(false) }
