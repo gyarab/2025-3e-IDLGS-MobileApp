@@ -2,12 +2,10 @@ package cz.idlgs.mobile.utils
 
 import android.content.Context
 import android.content.Intent
-import android.util.Patterns
 import android.widget.Toast
 import androidx.core.net.toUri
 
 object Utils {
-	val urlRegex = Patterns.WEB_URL.toRegex()
 	var currentToast: Toast? = null
 
 	fun Context.showToast(msg: String, long: Boolean = false) {
