@@ -24,4 +24,7 @@
 	<string name="cancel">Cancel</string>
 	<string name="language">Language</string>
 	<string name="change_language">Change language</string>
+	<string name="courses_n_textbooks">Courses &amp; Textbooks</string>
+	<string name="search">Search</string>
+	<string name="welcome_to_idlgs_mobile">Welcome to IDLGS Mobile</string>
 </resources>

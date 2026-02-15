@@ -25,4 +25,7 @@
 	<string name="cancel">Zrušit</string>
 	<string name="language">Jazyk</string>
 	<string name="change_language">Změnit jazyk</string>
+	<string name="courses_n_textbooks">Kurzy a učebnice</string>
+	<string name="search">Hledat</string>
+	<string name="welcome_to_idlgs_mobile">Vítejte v IDLGS Mobile</string>
 </resources>
