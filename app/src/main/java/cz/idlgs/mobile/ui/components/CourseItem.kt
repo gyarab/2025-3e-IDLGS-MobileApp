@@ -2,11 +2,16 @@ package cz.idlgs.mobile.ui.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.AmpStories
+import androidx.compose.material.icons.filled.Book
+import androidx.compose.material.icons.outlined.Description
+import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -17,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cz.idlgs.mobile.data.Course
 import cz.idlgs.mobile.data.CourseType
+import cz.idlgs.mobile.utils.UiUtils.getThemedColor
 
 @Composable
 fun CourseCard(
@@ -27,8 +33,10 @@ fun CourseCard(
 		modifier = Modifier
 			.fillMaxWidth()
 			.padding(8.dp),
-		colors = CardDefaults.cardColors(containerColor = course.color),
-		shape = RoundedCornerShape(8.dp),
+		colors = CardDefaults.cardColors(
+			containerColor = getThemedColor(isSystemInDarkTheme(), course.color)
+		),
+		shape = MaterialTheme.shapes.small,
 		onClick = onClick
 	) {
 		Column(
@@ -38,7 +46,7 @@ fun CourseCard(
 		) {
 			Row(verticalAlignment = Alignment.CenterVertically) {
 				Icon(
-					imageVector = if (course.type == CourseType.TEXTBOOK) Icons.Default.AutoStories else Icons.Default.Description,
+					imageVector = if (course.type == CourseType.TEXTBOOK) Icons.Default.Book else Icons.Default.AmpStories,
 					contentDescription = null,
 					tint = Color.White,
 					modifier = Modifier.size(24.dp)
@@ -62,7 +70,7 @@ fun CourseCard(
 
 			Row(verticalAlignment = Alignment.CenterVertically) {
 				Icon(
-					Icons.Default.PersonOutline,
+					Icons.Outlined.Person,
 					contentDescription = null,
 					tint = Color.White.copy(alpha = 0.8f),
 					modifier = Modifier.size(16.dp)
@@ -72,35 +80,29 @@ fun CourseCard(
 					text = course.author,
 					color = Color.White,
 					fontSize = 12.sp,
-					fontWeight = FontWeight.Bold
+					maxLines = 1,
 				)
 			}
-			if (course.grade != null || course.progress != null) {
-				Row(verticalAlignment = Alignment.CenterVertically) {
-					Icon(
-						Icons.Default.Grade,
-						contentDescription = null,
-						tint = Color.White.copy(alpha = 0.8f),
-						modifier = Modifier.size(16.dp)
-					)
-					Spacer(Modifier.width(4.dp))
-					Text(
-						text = course.grade ?: "${course.progress}%",
-						color = Color.White,
-						fontSize = 12.sp
-					)
-				}
+
+			Spacer(Modifier.height(4.dp))
+			Row(verticalAlignment = Alignment.CenterVertically) {
+				Icon(
+					Icons.Outlined.Description,
+					contentDescription = null,
+					tint = Color.White.copy(alpha = 0.8f),
+					modifier = Modifier.size(16.dp)
+				)
+				Spacer(Modifier.width(4.dp))
+				Text(
+					text = course.description,
+					color = Color.White,
+					fontSize = 12.sp,
+					maxLines = 2,
+				)
 			}
 
-			Spacer(Modifier.height(8.dp))
-			Text(
-				text = course.description,
-				color = Color.White.copy(alpha = 0.8f),
-				fontSize = 12.sp
-			)
-
-			if (course.grade != null || course.progress != null) {
-				Spacer(Modifier.height(12.dp))
+			if (course.grade != null) {
+				Spacer(Modifier.height(8.dp))
 				Box(
 					modifier = Modifier
 						.fillMaxWidth()
@@ -108,12 +110,26 @@ fun CourseCard(
 						.padding(8.dp)
 				) {
 					Text(
-						text = course.grade ?: "${course.progress}%",
+						text = course.grade,
 						color = Color.White,
 						fontWeight = FontWeight.Bold,
 						fontSize = 16.sp
 					)
 				}
+			}
+			if (course.progress != null) {
+				Spacer(Modifier.height(8.dp))
+
+				LinearProgressIndicator(
+					progress = {
+						course.progress.div(100f)
+					},
+					color = Color.White,
+					trackColor = Color.White.copy(alpha = 0.2f),
+					modifier = Modifier
+						.fillMaxWidth()
+						.height(4.dp)
+				)
 			}
 		}
 	}

@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -23,6 +24,7 @@ import com.ramcosta.composedestinations.generated.destinations.ChatDialogDestina
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
 import cz.idlgs.mobile.BuildConfig
+import cz.idlgs.mobile.R
 import cz.idlgs.mobile.nav.GuestNavGraph
 import cz.idlgs.mobile.ui.theme.IDLGSTheme
 import cz.idlgs.mobile.utils.Utils.openLinkInBrowser
@@ -34,7 +36,7 @@ fun AboutScreen(navigator: DestinationsNavigator) {
 	Column(
 		modifier = Modifier
 			.fillMaxSize()
-			.padding(16.dp)
+			.padding(12.dp)
 			.verticalScroll(scrollState),
 		horizontalAlignment = Alignment.CenterHorizontally,
 		verticalArrangement = Arrangement.Center
@@ -66,13 +68,13 @@ fun AboutDetails() {
 	Column(
 		modifier = Modifier
 			.fillMaxSize()
-			.padding(20.dp),
+			.padding(12.dp),
 		horizontalAlignment = Alignment.CenterHorizontally,
 		verticalArrangement = Arrangement.Center,
 	) {
 		Text(
 			text = buildString {
-				append("Welcome to IDLGS Mobile")
+				append(stringResource(R.string.welcome_to_idlgs_mobile))
 				if (BuildConfig.DEBUG) append(", Dev")
 			},
 			style = MaterialTheme.typography.headlineMedium,

@@ -8,8 +8,11 @@ import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffo
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
+import androidx.core.graphics.ColorUtils
 
 object UiUtils {
 
@@ -24,6 +27,15 @@ object UiUtils {
 	fun adaptiveNavSuiteType() = NavigationSuiteScaffoldDefaults.navigationSuiteType(
 		currentWindowAdaptiveInfo()
 	)
+
+	fun getThemedColor(isDarkMode: Boolean, baseColor: Color): Color = if (isDarkMode) {
+		val hsl = FloatArray(3)
+		ColorUtils.colorToHSL(baseColor.toArgb(), hsl)
+		hsl[1] = hsl[1].coerceAtMost(0.5f)
+		hsl[2] = hsl[2].coerceAtMost(0.5f)
+		Color(ColorUtils.HSLToColor(hsl))
+	} else
+		baseColor
 
 	@Composable
 	fun SplitIfLandscape(

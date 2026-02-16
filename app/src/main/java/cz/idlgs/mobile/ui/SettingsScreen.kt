@@ -94,7 +94,7 @@ fun SettingsScreen(
 				.verticalScroll(scrollState)
 		) {
 			Text(
-				text = "Account",
+				text = "Profile",
 				style = MaterialTheme.typography.labelLarge,
 				color = MaterialTheme.colorScheme.primary,
 				modifier = Modifier.padding(16.dp)
@@ -134,6 +134,12 @@ fun SettingsScreen(
 
 			HorizontalDivider(Modifier.padding(horizontal = 16.dp))
 
+			Text(
+				text = "Account",
+				style = MaterialTheme.typography.labelLarge,
+				color = MaterialTheme.colorScheme.primary,
+				modifier = Modifier.padding(16.dp)
+			)
 			ListItem(
 				headlineContent = {
 					Text(
