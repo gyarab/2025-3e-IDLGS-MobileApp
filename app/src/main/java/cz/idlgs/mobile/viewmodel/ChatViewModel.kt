@@ -1,11 +1,11 @@
 package cz.idlgs.mobile.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import cz.idlgs.mobile.BuildConfig
+import cz.idlgs.mobile.data.remote.dto.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -17,30 +17,6 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import java.io.BufferedReader
 
-data class ChatMessage(
-	val role: Role,
-	val content: String
-)
-
-@Suppress("EnumEntryName")
-enum class Role {
-	user, assistant, system, error,
-}
-
-data class OpenAIRequest(
-	val model: String,
-	val messages: List<ChatMessage>,
-	val stream: Boolean
-)
-
-data class OpenAIResponse(
-	val choices: List<Choice>? = null
-)
-
-data class Choice(
-	val message: ChatMessage
-)
-
 class ChatViewModel() : ViewModel() {
 	private val _messages = MutableStateFlow<List<ChatMessage>>(emptyList())
 	val messages = _messages.asStateFlow()
@@ -51,12 +27,13 @@ class ChatViewModel() : ViewModel() {
 	private val client = OkHttpClient()
 	private val gson = Gson()
 
-	private val BASE_URL = BuildConfig.LM_STUDIO_URL
+	private val BASE_URL = BuildConfig.API_URL
 	private val USE_STREAMING = true
 
 	private val MODEL_LIST = listOf(
 //		"mistralai/ministral-3-14b-reasoning",
-		"qwen/qwen3-vl-8b",
+//		"qwen/qwen3-vl-8b",
+		"moonshotai/kimi-k2-instruct-0905",
 	)
 
 	fun sendMessage(content: String) {
@@ -71,7 +48,6 @@ class ChatViewModel() : ViewModel() {
 			_messages.value = _messages.value.filter { it.role != Role.error }
 
 			for (model in MODEL_LIST) {
-				Log.d("ChatViewModel", "Sending message to model $model")
 				try {
 					performRequest(model, USE_STREAMING)
 					lastError = null
@@ -90,8 +66,6 @@ class ChatViewModel() : ViewModel() {
 					Role.error,
 					"Error:\nPlease try again later"
 				)
-				if (BuildConfig.DEBUG)
-					Log.e("ChatViewModel", it.stackTraceToString())
 			}
 			_isLoading.value = false
 		}
@@ -105,6 +79,8 @@ class ChatViewModel() : ViewModel() {
 
 		val request = Request.Builder()
 			.url(BASE_URL)
+			.addHeader("Content-Type", "application/json")
+			.addHeader("Authorization", "Bearer ${BuildConfig.API_KEY}")
 			.addHeader("skip_zrok_interstitial", "1")
 			.post(body)
 			.build()
@@ -125,8 +101,10 @@ class ChatViewModel() : ViewModel() {
 
 		val assistantMessage = openAIResponse.choices?.firstOrNull()?.message
 			?: ChatMessage(
-				Role.error,
-				"Empty response from AI" + if (BuildConfig.DEBUG) " for model $model" else ""
+				Role.error, buildString {
+					append("Empty response from AI")
+					if (BuildConfig.DEBUG) append(" for model $model")
+				}
 			)
 		_messages.value += assistantMessage
 	}
@@ -162,7 +140,7 @@ class ChatViewModel() : ViewModel() {
 						}
 					}
 				} catch (e: Exception) {
-					Log.e("ChatViewModel", "Parsing error", e)
+
 				}
 			}
 		}
