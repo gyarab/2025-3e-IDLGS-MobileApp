@@ -1,4 +1,3 @@
-
 import com.android.build.api.dsl.ApplicationDefaultConfig
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.time.LocalDate
@@ -12,9 +11,9 @@ plugins {
 	alias(libs.plugins.hilt)
 }
 
-fun appVersionName(): String {
+fun appVersionName(prefix: String): String {
 	val date = LocalDate.now().format(DateTimeFormatter.ofPattern("yy.DDD"))
-	return "a$date"
+	return "$prefix$date"
 }
 
 fun ApplicationDefaultConfig.buildConfigFromLocalProperties(vararg keys: String) {
@@ -46,11 +45,12 @@ android {
 		minSdk = 23
 		targetSdk = 36
 		versionCode = 5
-		versionName = appVersionName()
+		versionName = appVersionName("a")
 
 		testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-
-		buildConfigFromLocalProperties("LM_STUDIO_URL", "WEBSITE_URL")
+		buildConfigFromLocalProperties(
+			"LM_STUDIO_URL", "WEBSITE_URL", "API_URL", "API_KEY"
+		)
 	}
 
 	buildTypes {
