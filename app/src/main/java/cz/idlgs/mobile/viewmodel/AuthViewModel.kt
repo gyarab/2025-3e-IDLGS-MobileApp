@@ -1,5 +1,6 @@
 package cz.idlgs.mobile.viewmodel
 
+import android.content.Context
 import android.util.Patterns
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -72,42 +73,42 @@ class AuthViewModel @Inject constructor(
 	private val emailRegex = Patterns.EMAIL_ADDRESS.toRegex()
 	private fun isEmailFormatValid(email: String) = email.matches(emailRegex)
 
-	fun performLogin(navigator: DestinationsNavigator) {
+	fun performLogin(navigator: DestinationsNavigator,context: Context) {
 		viewModelScope.launch {
 			emailError = null
 			passwordError = null
 			email = email.copy(text = email.text.trim())
 
 			if (!isEmailFormatValid(email.text)) {
-				emailError = "Invalid email format"
+				emailError = context.getString(R.string.invalid_email_format)
 				return@launch
 			}
 			if (password.isEmpty()) {
-				passwordError = "Password cannot be empty"
+				passwordError = context.getString(R.string.password_cannot_be_empty)
 				return@launch
 			}
 
 			isLoading = true
-
 			val result = authRepository.login(email.text, password)
 			if (result.isSuccess) {
+
 				userPreferences.saveEmail(email.text)
 				navigator.navigate(ListScreenDestination) {
 					popUpTo(NavGraphs.root) { inclusive = true }
 					launchSingleTop = true
 				}
-				uiEventManager.showSnackbar("Logged in")
-			} else uiEventManager.showSnackbar("Login failed")
+				uiEventManager.showSnackbar(R.string.successfully_logged_in)
+			} else uiEventManager.showSnackbar(R.string.login_failed)
 
 			isLoading = false
 		}
 	}
 
-	fun performForgotPassword() {
+	fun performForgotPassword(context: Context) {
 		viewModelScope.launch {
 			emailError = null
 			if (!isEmailFormatValid(email.text)) {
-				emailError = "Invalid email format"
+				emailError = context.getString(R.string.invalid_email_format)
 				return@launch
 			}
 

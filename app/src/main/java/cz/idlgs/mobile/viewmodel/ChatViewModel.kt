@@ -6,11 +6,11 @@ import cz.idlgs.mobile.data.remote.dto.ChatMessage
 import cz.idlgs.mobile.data.remote.dto.Role
 import cz.idlgs.mobile.domain.repository.ChatRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import jakarta.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @HiltViewModel
 class ChatViewModel @Inject constructor(

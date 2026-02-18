@@ -13,7 +13,6 @@ class AuthRepositoryImpl : AuthRepository {
 	override suspend fun login(email: String, password: String): Result<Unit> {
 		delay(200)
 		_isLoggedIn.value = true
-		println("AuthRepositoryImpl isLoggedIn: ${_isLoggedIn.value}")
 		return try {
 			Result.success(Unit)
 		} catch (e: Exception) {
@@ -24,7 +23,6 @@ class AuthRepositoryImpl : AuthRepository {
 	override suspend fun logout(): Result<Unit> {
 		delay(1000)
 		_isLoggedIn.value = false
-		println("AuthRepositoryImpl isLoggedIn: ${_isLoggedIn.value}")
 		return try {
 			Result.success(Unit)
 		} catch (e: Exception) {
