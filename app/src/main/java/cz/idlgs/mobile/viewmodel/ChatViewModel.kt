@@ -2,44 +2,35 @@ package cz.idlgs.mobile.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.gson.Gson
-import com.google.gson.JsonObject
-import cz.idlgs.mobile.BuildConfig
-import cz.idlgs.mobile.data.remote.dto.*
+import cz.idlgs.mobile.data.remote.dto.ChatMessage
+import cz.idlgs.mobile.data.remote.dto.Role
+import cz.idlgs.mobile.domain.repository.ChatRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
+import jakarta.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.RequestBody.Companion.toRequestBody
-import okhttp3.Response
-import java.io.BufferedReader
 
-class ChatViewModel() : ViewModel() {
+@HiltViewModel
+class ChatViewModel @Inject constructor(
+	private val chatRepository: ChatRepository
+) : ViewModel() {
 	private val _messages = MutableStateFlow<List<ChatMessage>>(emptyList())
 	val messages = _messages.asStateFlow()
 
 	private val _isLoading = MutableStateFlow(false)
 	val isLoading = _isLoading.asStateFlow()
 
-	private val client = OkHttpClient()
-	private val gson = Gson()
-
-	private val BASE_URL = BuildConfig.API_URL
 	private val USE_STREAMING = true
-
 	private val MODEL_LIST = listOf(
-//		"mistralai/ministral-3-14b-reasoning",
-//		"qwen/qwen3-vl-8b",
 		"moonshotai/kimi-k2-instruct-0905",
 	)
 
 	fun sendMessage(content: String) {
 		if (content.isBlank()) return
 
-		val userMessage = ChatMessage(Role.user, content)
+		val userMessage = ChatMessage(Role.user, content.trim())
 		_messages.value += userMessage
 		_isLoading.value = true
 
@@ -49,7 +40,14 @@ class ChatViewModel() : ViewModel() {
 
 			for (model in MODEL_LIST) {
 				try {
-					performRequest(model, USE_STREAMING)
+					_messages.value += ChatMessage(Role.assistant, "")
+					val msgIndex = _messages.value.lastIndex
+
+					chatRepository.performRequest(_messages.value, model, !USE_STREAMING) {
+						val list = _messages.value.toMutableList()
+						list[msgIndex] = list[msgIndex].copy(content = list[msgIndex].content + it)
+						_messages.value = list
+					}
 					lastError = null
 					break
 				} catch (e: Exception) {
@@ -62,87 +60,9 @@ class ChatViewModel() : ViewModel() {
 				}
 			}
 			lastError?.let {
-				_messages.value += ChatMessage(
-					Role.error,
-					"Error:\nPlease try again later"
-				)
+				_messages.value += ChatMessage(Role.error, "Error:\nPlease try again later")
 			}
 			_isLoading.value = false
-		}
-	}
-
-	private fun performRequest(model: String, stream: Boolean) {
-		val requestBody = OpenAIRequest(model = model, messages = _messages.value, stream = stream)
-		val jsonBody = gson.toJson(requestBody)
-		val mediaType = "application/json; charset=utf-8".toMediaType()
-		val body = jsonBody.toRequestBody(mediaType)
-
-		val request = Request.Builder()
-			.url(BASE_URL)
-			.addHeader("Content-Type", "application/json")
-			.addHeader("Authorization", "Bearer ${BuildConfig.API_KEY}")
-			.addHeader("skip_zrok_interstitial", "1")
-			.post(body)
-			.build()
-
-		client.newCall(request).execute().use { response ->
-			if (!response.isSuccessful) {
-				throw Exception("Server returned code ${response.code}")
-			}
-
-			if (stream) handleStreamingResponse(response)
-			else handleBlockingResponse(response, model)
-		}
-	}
-
-	private fun handleBlockingResponse(response: Response, model: String) {
-		val responseData = response.body.string()
-		val openAIResponse = gson.fromJson(responseData, OpenAIResponse::class.java)
-
-		val assistantMessage = openAIResponse.choices?.firstOrNull()?.message
-			?: ChatMessage(
-				Role.error, buildString {
-					append("Empty response from AI")
-					if (BuildConfig.DEBUG) append(" for model $model")
-				}
-			)
-		_messages.value += assistantMessage
-	}
-
-	private fun handleStreamingResponse(response: Response) {
-		_messages.value += ChatMessage(Role.assistant, "")
-		val messageIndex = _messages.value.lastIndex
-
-		val source = response.body.byteStream()
-		val reader = BufferedReader(source.reader())
-		var line: String?
-
-		while (reader.readLine().also { line = it } != null) {
-			val currentLine = line ?: continue
-			if (currentLine.startsWith("data: ")) {
-				val data = currentLine.removePrefix("data: ").trim()
-				if (data == "[DONE]") break
-
-				try {
-					val jsonObject = gson.fromJson(data, JsonObject::class.java)
-					val choices = jsonObject.getAsJsonArray("choices")
-					if (choices != null && choices.size() > 0) {
-						val delta = choices.get(0).asJsonObject.get("delta").asJsonObject
-						if (delta.has("content")) {
-							val contentChunk = delta.get("content").asString
-							if (contentChunk.isNotEmpty()) {
-								val currentList = _messages.value.toMutableList()
-								val currentMsg = currentList[messageIndex]
-								currentList[messageIndex] =
-									currentMsg.copy(content = currentMsg.content + contentChunk)
-								_messages.value = currentList
-							}
-						}
-					}
-				} catch (e: Exception) {
-
-				}
-			}
 		}
 	}
 }

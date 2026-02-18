@@ -20,21 +20,21 @@ import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
 import cz.idlgs.mobile.BuildConfig
+import cz.idlgs.mobile.data.remote.dto.Role
 import cz.idlgs.mobile.nav.ChatNavGraph
 import cz.idlgs.mobile.ui.theme.IDLGSTheme
 import cz.idlgs.mobile.viewmodel.ChatViewModel
-import cz.idlgs.mobile.viewmodel.Role
 
 @Destination<ChatNavGraph>(start = true)
 @Composable
 fun ChatDialog(
 	navigator: DestinationsNavigator,
-	viewModel: ChatViewModel = viewModel()
+	viewModel: ChatViewModel = hiltViewModel()
 ) {
 	var text by remember { mutableStateOf("") }
 	val messages by viewModel.messages.collectAsState()
@@ -105,7 +105,7 @@ fun ChatDialog(
 							Surface(
 								shape = RoundedCornerShape(12.dp),
 								color = if (isUser) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.secondaryContainer,
-								modifier = Modifier.widthIn(max = 280.dp)
+								modifier = Modifier.widthIn(max = 320.dp)
 							) {
 								Text(
 									text = message.content,
@@ -145,6 +145,7 @@ fun ChatDialog(
 									}
 								} else false
 							},
+						shape = MaterialTheme.shapes.medium,
 						placeholder = { Text("Ask something...") },
 						maxLines = 3
 					)
@@ -160,7 +161,7 @@ fun ChatDialog(
 						Icon(
 							imageVector = Icons.AutoMirrored.Default.Send,
 							contentDescription = "Send",
-							tint = MaterialTheme.colorScheme.primary
+//							tint = MaterialTheme.colorScheme.primary
 						)
 					}
 				}
