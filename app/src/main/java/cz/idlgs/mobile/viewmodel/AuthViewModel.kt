@@ -12,10 +12,12 @@ import com.ramcosta.composedestinations.generated.NavGraphs
 import com.ramcosta.composedestinations.generated.destinations.ListScreenDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import cz.idlgs.mobile.R
+import cz.idlgs.mobile.data.UserPreferences
 import cz.idlgs.mobile.domain.repository.AuthRepository
 import cz.idlgs.mobile.utils.UiEventManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -23,6 +25,7 @@ import javax.inject.Inject
 class AuthViewModel @Inject constructor(
 	private val authRepository: AuthRepository,
 	private val uiEventManager: UiEventManager,
+	private val userPreferences: UserPreferences,
 ) : ViewModel() {
 	var email by mutableStateOf(TextFieldValue(""))
 		private set
@@ -36,6 +39,16 @@ class AuthViewModel @Inject constructor(
 	var isLoading by mutableStateOf(false)
 		private set
 
+	init {
+		viewModelScope.launch {
+			val savedEmail = userPreferences.userEmail.first()
+			savedEmail?.let {
+				email = TextFieldValue(it)
+				selectEmail(email.text.length)
+			}
+		}
+	}
+
 	fun onEmailChange(newValue: TextFieldValue) {
 		email = newValue
 		emailError = null
@@ -46,12 +59,13 @@ class AuthViewModel @Inject constructor(
 		passwordError = null
 	}
 
-	fun selectEmail(vararg i: Int) {
-		if (email.text.isNotEmpty())
+	fun selectEmail(vararg i: Int) = email.let {
+		assert(i.size in 0..2)
+		if (it.text.isNotEmpty())
 			when (i.size) {
-				0 -> email = email.copy(selection = TextRange(email.text.length))
-				1 -> email = email.copy(selection = TextRange(i[0]))
-				2 -> email = email.copy(selection = TextRange(i[0], i[1]))
+				0 -> email = it.copy(selection = TextRange(it.text.length))
+				1 -> email = it.copy(selection = TextRange(i[0]))
+				2 -> email = it.copy(selection = TextRange(i[0], i[1]))
 			}
 	}
 
@@ -77,13 +91,13 @@ class AuthViewModel @Inject constructor(
 
 			val result = authRepository.login(email.text, password)
 			if (result.isSuccess) {
+				userPreferences.saveEmail(email.text)
 				navigator.navigate(ListScreenDestination) {
 					popUpTo(NavGraphs.root) { inclusive = true }
 					launchSingleTop = true
 				}
 				uiEventManager.showSnackbar("Logged in")
-			}
-			else uiEventManager.showSnackbar("Login failed")
+			} else uiEventManager.showSnackbar("Login failed")
 
 			isLoading = false
 		}
