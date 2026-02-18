@@ -34,7 +34,7 @@ class LMServerRepositoryImpl : ChatRepository {
 				throw Exception("Server returned code ${response.code}")
 
 			if (stream) handleStreamingResponse(response) { onChunkReceived(it) }
-			else handleBlockingResponse(response)
+			else handleBlockingResponse(response) { onChunkReceived(it) }
 		}
 	}
 }

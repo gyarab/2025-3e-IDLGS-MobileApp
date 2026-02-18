@@ -24,6 +24,7 @@ class ChatViewModel @Inject constructor(
 
 	private val USE_STREAMING = true
 	private val MODEL_LIST = listOf(
+//		"qwen/qwen3-vl-8b",
 		"moonshotai/kimi-k2-instruct-0905",
 	)
 
@@ -43,7 +44,7 @@ class ChatViewModel @Inject constructor(
 					_messages.value += ChatMessage(Role.assistant, "")
 					val msgIndex = _messages.value.lastIndex
 
-					chatRepository.performRequest(_messages.value, model, !USE_STREAMING) {
+					chatRepository.performRequest(_messages.value, model, USE_STREAMING) {
 						val list = _messages.value.toMutableList()
 						list[msgIndex] = list[msgIndex].copy(content = list[msgIndex].content + it)
 						_messages.value = list

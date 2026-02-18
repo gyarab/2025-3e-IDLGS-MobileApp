@@ -17,13 +17,13 @@ interface ChatRepository {
 		messages: List<ChatMessage>, model: String, stream: Boolean, onChunkReceived: (String) -> Unit
 	)
 
-	fun handleBlockingResponse(response: Response): ChatMessage {
+	fun handleBlockingResponse(response: Response, onChunkReceived: (String) -> Unit) {
 		val responseData = response.body.string()
 		val openAIResponse = gson.fromJson(responseData, OpenAIResponse::class.java)
 
 		val assistantMessage = openAIResponse.choices?.firstOrNull()?.message
 			?: ChatMessage(Role.error, "Empty response from AI")
-		return assistantMessage
+		onChunkReceived(assistantMessage.content)
 	}
 
 	fun handleStreamingResponse(
@@ -51,7 +51,7 @@ interface ChatRepository {
 						}
 					}
 				} catch (e: Exception) {
-
+					onChunkReceived("Error:\nTry again later")
 				}
 			}
 		}
