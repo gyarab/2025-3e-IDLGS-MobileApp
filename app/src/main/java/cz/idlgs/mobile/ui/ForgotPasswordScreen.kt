@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -39,6 +40,7 @@ fun ForgotPasswordScreen(
 ) {
 	val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
 	val focusRequester = remember { FocusRequester() }
+	val context = LocalContext.current
 
 	LaunchedEffect(Unit) {
 		focusRequester.requestFocus()
@@ -61,13 +63,12 @@ fun ForgotPasswordScreen(
 			onValueChange = viewModel::onEmailChange,
 			label = { Text(stringResource(R.string.email)) },
 			isError = viewModel.emailError != null,
-			supportingText = {
-				viewModel.emailError?.let { Text(it) }
-			},
+			supportingText = { viewModel.emailError?.let { Text(it) } },
 			modifier = Modifier
 				.fillMaxWidth()
 				.focusRequester(focusRequester),
 			singleLine = true,
+			shape = MaterialTheme.shapes.medium,
 			leadingIcon = {
 				Icon(
 					Icons.Default.Email,
@@ -79,14 +80,14 @@ fun ForgotPasswordScreen(
 				imeAction = ImeAction.Go
 			),
 			keyboardActions = KeyboardActions(
-				onGo = { viewModel.performForgotPassword() }
+				onGo = { viewModel.forgotPassword(context) }
 			)
 		)
 
 		Spacer(modifier = Modifier.height(8.dp))
 
 		Button(
-			onClick = { viewModel.performForgotPassword() },
+			onClick = { viewModel.forgotPassword(context) },
 			enabled = !viewModel.isLoading && viewModel.email.text.isNotEmpty(),
 			modifier = Modifier.fillMaxWidth(.9f)
 		) {

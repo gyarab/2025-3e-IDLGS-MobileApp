@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.*
 import androidx.compose.ui.tooling.preview.Preview
@@ -43,6 +44,7 @@ fun LoginScreen(
 	val focusRequester = remember { FocusRequester() }
 	val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
 	val showPassword = rememberSaveable { mutableStateOf(false) }
+	val context = LocalContext.current
 
 	LaunchedEffect(Unit) {
 		focusRequester.requestFocus()
@@ -65,6 +67,7 @@ fun LoginScreen(
 				.fillMaxWidth()
 				.focusRequester(focusRequester),
 			singleLine = true,
+			shape = MaterialTheme.shapes.medium,
 			leadingIcon = {
 				Icon(
 					Icons.Outlined.Email,
@@ -87,6 +90,7 @@ fun LoginScreen(
 			supportingText = { viewModel.passwordError?.let { Text(it) } },
 			modifier = Modifier.fillMaxWidth(),
 			singleLine = true,
+			shape = MaterialTheme.shapes.medium,
 			leadingIcon = {
 				Icon(
 					Icons.Default.Password, null
@@ -105,13 +109,13 @@ fun LoginScreen(
 				imeAction = ImeAction.Go
 			),
 			keyboardActions = KeyboardActions(
-				onGo = { viewModel.performLogin(navigator).also { focusRequester.freeFocus() } }
+				onGo = { viewModel.login(navigator, context).also { focusRequester.freeFocus() } }
 			)
 		)
 		Spacer(modifier = Modifier.height(8.dp))
 
 		Button(
-			onClick = { viewModel.performLogin(navigator).also { focusRequester.freeFocus() } },
+			onClick = { viewModel.login(navigator, context).also { focusRequester.freeFocus() } },
 			enabled = !viewModel.isLoading && viewModel.email.text.isNotEmpty(),
 			modifier = Modifier.fillMaxWidth(.9f)
 		) {
