@@ -18,6 +18,7 @@ import androidx.compose.ui.input.key.*
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -29,6 +30,7 @@ import cz.idlgs.mobile.data.remote.dto.Role
 import cz.idlgs.mobile.nav.ChatNavGraph
 import cz.idlgs.mobile.ui.theme.IDLGSTheme
 import cz.idlgs.mobile.viewmodel.ChatViewModel
+import dev.jeziellago.compose.markdowntext.MarkdownText
 
 @Destination<ChatNavGraph>(start = true)
 @Composable
@@ -103,14 +105,15 @@ fun ChatDialog(
 							contentAlignment = if (isUser) Alignment.CenterEnd else Alignment.CenterStart
 						) {
 							Surface(
-								shape = RoundedCornerShape(12.dp),
-								color = if (isUser) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.secondaryContainer,
-								modifier = Modifier.widthIn(max = 320.dp)
+								shape = MaterialTheme.shapes.medium,
+								color = if (isUser) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface,
+								modifier = if (isUser) Modifier.widthIn(max = 900.dp) else Modifier.fillMaxWidth()
 							) {
-								Text(
-									text = message.content,
+								MarkdownText(
+									markdown = message.content,
 									modifier = Modifier.padding(12.dp),
-									color = MaterialTheme.colorScheme.onSurface
+									style = LocalTextStyle.current.copy(fontSize = 16.sp),
+									isTextSelectable = true
 								)
 							}
 						}
@@ -147,7 +150,7 @@ fun ChatDialog(
 							},
 						shape = MaterialTheme.shapes.medium,
 						placeholder = { Text("Ask something...") },
-						maxLines = 3
+						maxLines = 4
 					)
 					Spacer(modifier = Modifier.width(8.dp))
 					IconButton(
@@ -156,7 +159,7 @@ fun ChatDialog(
 							keyboardController!!.hide()
 							text = ""
 						},
-						enabled = text.isNotBlank() && !isLoading
+						enabled = text.isNotBlank() && !isLoading,
 					) {
 						Icon(
 							imageVector = Icons.AutoMirrored.Default.Send,

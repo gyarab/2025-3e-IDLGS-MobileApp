@@ -1,6 +1,7 @@
+
 import com.android.build.api.dsl.ApplicationDefaultConfig
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Properties
 
@@ -11,9 +12,11 @@ plugins {
 	alias(libs.plugins.hilt)
 }
 
-fun appVersionName(prefix: String): String {
-	val date = LocalDate.now().format(DateTimeFormatter.ofPattern("yy.DDD"))
-	return "$prefix$date"
+fun appVersionName(prefix: Char?): String {
+	val now = LocalDateTime.now()
+	val pattern = if (prefix != null) "yy.DDD" else "HH.mm"
+	val formatted = now.format(DateTimeFormatter.ofPattern(pattern))
+	return prefix?.let { "$it$formatted" } ?: "-$formatted"
 }
 
 fun ApplicationDefaultConfig.buildConfigFromLocalProperties(vararg keys: String) {
@@ -42,10 +45,10 @@ android {
 
 	defaultConfig {
 		applicationId = namespace
-		minSdk = 23
+		minSdk = 24
 		targetSdk = 36
 		versionCode = 5
-		versionName = appVersionName("a")
+		versionName = appVersionName('a')
 
 		testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 		buildConfigFromLocalProperties(
@@ -56,7 +59,7 @@ android {
 	buildTypes {
 		debug {
 			applicationIdSuffix = ".dev"
-			versionNameSuffix = "-dev"
+			versionNameSuffix = appVersionName(null)
 		}
 		release {
 			isMinifyEnabled = false
@@ -104,6 +107,7 @@ dependencies {
 	implementation(libs.hilt.android)
 	ksp(libs.hilt.android.compiler)
 	implementation(libs.androidx.hilt.navigation.compose)
+	implementation("com.github.jeziellago:compose-markdown:0.5.8")
 
 	testImplementation(libs.junit)
 	androidTestImplementation(libs.androidx.junit)
