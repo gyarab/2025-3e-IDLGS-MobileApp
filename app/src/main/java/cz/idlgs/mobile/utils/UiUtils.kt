@@ -31,8 +31,8 @@ object UiUtils {
 	fun getThemedColor(isDarkMode: Boolean, baseColor: Color): Color = if (isDarkMode) {
 		val hsl = FloatArray(3)
 		ColorUtils.colorToHSL(baseColor.toArgb(), hsl)
-		hsl[1] = hsl[1].coerceAtMost(0.5f)
-		hsl[2] = hsl[2].coerceAtMost(0.5f)
+		hsl[1] = hsl[1].coerceIn(.2f, .6f)
+		hsl[2] = hsl[2].coerceIn(.2f, .6f)
 		Color(ColorUtils.HSLToColor(hsl))
 	} else
 		baseColor
