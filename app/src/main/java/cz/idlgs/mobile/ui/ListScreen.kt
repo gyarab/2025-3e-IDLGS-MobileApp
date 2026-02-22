@@ -1,17 +1,21 @@
 package cz.idlgs.mobile.ui
 
-import androidx.compose.foundation.background
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandHorizontally
+import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.staggeredgrid.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.GridView
-import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -25,7 +29,6 @@ import cz.idlgs.mobile.ui.components.CourseCard
 @Destination<UserNavGraph>(start = true)
 @Composable
 fun ListScreen(modifier: Modifier = Modifier) {
-	var searchQuery by remember { mutableStateOf("") }
 	val (archivedCourses, normalCourses) = MockData.courses.partition { it.archived }
 
 	Column {
@@ -58,7 +61,7 @@ fun ListScreen(modifier: Modifier = Modifier) {
 			}
 
 			items(normalCourses) { course ->
-				CourseCard(course = course) { TODO() }
+				CourseCard(course = course) {/* TODO */}
 			}
 
 			if (archivedCourses.isNotEmpty()) {
@@ -84,7 +87,7 @@ fun ListScreen(modifier: Modifier = Modifier) {
 				}
 
 				items(archivedCourses) { course ->
-					CourseCard(course = course) { TODO() }
+					CourseCard(course = course) { /* TODO */ }
 				}
 			} else {
 				item(span = StaggeredGridItemSpan.FullLine) {
@@ -99,45 +102,98 @@ fun ListScreen(modifier: Modifier = Modifier) {
 				}
 			}
 		}
-		Row(
-			modifier = Modifier
-				.fillMaxWidth()
-				.height(IntrinsicSize.Min)
-				.padding(8.dp)
-				.background(
-					MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
-					MaterialTheme.shapes.large
-				)
-				.padding(start = 8.dp, end = 8.dp, bottom = 8.dp),
-			verticalAlignment = Alignment.CenterVertically,
-			horizontalArrangement = Arrangement.spacedBy(8.dp)
+
+		BottomToolbar()
+	}
+}
+
+@Composable
+fun BottomToolbar() {
+	var searchQuery by rememberSaveable { mutableStateOf("") }
+	var isSearchExpanded by rememberSaveable { mutableStateOf(false) }
+	val focusRequester = remember { FocusRequester() }
+	val keyboardController = LocalSoftwareKeyboardController.current
+
+	LaunchedEffect(isSearchExpanded) {
+		if (isSearchExpanded) focusRequester.requestFocus()
+		else keyboardController?.hide()
+	}
+	Row(
+		modifier = Modifier
+			.fillMaxWidth()
+			.height(IntrinsicSize.Max)
+			.padding(4.dp),
+		verticalAlignment = Alignment.CenterVertically,
+		horizontalArrangement = Arrangement.End,
+	) {
+		AnimatedVisibility(
+			visible = isSearchExpanded,
+			enter = expandHorizontally(expandFrom = Alignment.End),
+			exit = shrinkHorizontally(shrinkTowards = Alignment.End),
+			modifier = Modifier.weight(1f, fill = false)
 		) {
 			OutlinedTextField(
 				value = searchQuery,
 				onValueChange = { searchQuery = it },
-				label = { Text(stringResource(R.string.search)) },
+				placeholder = { Text("Search...") },
 				leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+				trailingIcon = {
+					IconButton(onClick = {
+						if (searchQuery.isEmpty()) isSearchExpanded = false
+						else searchQuery = ""
+					}) {
+						Icon(Icons.Default.Clear, contentDescription = "Clear")
+					}
+				},
 				shape = MaterialTheme.shapes.medium,
-				modifier = Modifier.weight(1f),
 				singleLine = true,
-			)
-			Surface(
-				onClick = { TODO() },
 				modifier = Modifier
-					.fillMaxHeight()
-					.offset(y = 4.dp)
-					.padding(vertical = 4.dp),
-				shape = MaterialTheme.shapes.large,
-				tonalElevation = 40.dp
+					.focusRequester(focusRequester)
+					.fillMaxWidth()
+					.padding(horizontal = 8.dp)
+			)
+		}
+
+		Surface(
+			shape = MaterialTheme.shapes.large,
+			color = MaterialTheme.colorScheme.surface,
+			tonalElevation = 4.dp,
+			modifier = Modifier.fillMaxHeight()
+		) {
+			Row(
+				modifier = Modifier.padding(4.dp),
+				verticalAlignment = Alignment.CenterVertically
 			) {
-				Box(
-					modifier = Modifier.padding(horizontal = 14.dp),
-					contentAlignment = Alignment.Center
+				if (!isSearchExpanded) {
+					IconButton(
+						onClick = { isSearchExpanded = true },
+						shape = MaterialTheme.shapes.medium,
+						modifier = Modifier
+							.fillMaxHeight()
+							.size(48.dp),
+						colors = IconButtonDefaults.iconButtonColors(
+							containerColor = MaterialTheme.colorScheme.primaryContainer
+						),
+					) {
+						Icon(
+							Icons.Default.Search, "Open Search"
+						)
+					}
+					Spacer(Modifier.width(4.dp))
+				}
+
+				IconButton(
+					onClick = { /* TODO */ },
+					shape = MaterialTheme.shapes.medium,
+					modifier = Modifier
+						.fillMaxHeight()
+						.size(48.dp),
+					colors = IconButtonDefaults.iconButtonColors(
+						containerColor = MaterialTheme.colorScheme.primaryContainer
+					),
 				) {
 					Icon(
 						Icons.Default.Add, null,
-						modifier = Modifier.size(28.dp),
-						tint = MaterialTheme.colorScheme.onPrimaryContainer
 					)
 				}
 			}
