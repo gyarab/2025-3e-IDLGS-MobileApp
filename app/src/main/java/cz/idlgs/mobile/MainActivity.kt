@@ -17,6 +17,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.PreviewScreenSizes
+import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -75,8 +76,10 @@ fun IDLGSApp(uiEventManager: UiEventManager? = null) {
 			it.events.collect { event ->
 				when (event) {
 					is UiEvent.ShowToast -> context.showToast(event.message.asString(context))
-					is UiEvent.ShowSnackbar ->
-						snackbarHostState.showSnackbar(event.message.asString(context))
+					is UiEvent.ShowSnackbar -> snackbarHostState.showSnackbar(
+						message = event.message.asString(context),
+						withDismissAction = true,
+					)
 				}
 			}
 		}
@@ -129,7 +132,9 @@ fun IDLGSApp(uiEventManager: UiEventManager? = null) {
 			)
 			SnackbarHost(
 				hostState = snackbarHostState,
-				modifier = Modifier.align(Alignment.BottomCenter)
+				modifier = Modifier
+					.align(Alignment.BottomStart)
+					.widthIn(max = 300.dp)
 			)
 		}
 	}
