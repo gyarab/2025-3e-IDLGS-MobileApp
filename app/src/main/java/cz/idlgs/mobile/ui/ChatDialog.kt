@@ -1,9 +1,11 @@
 package cz.idlgs.mobile.ui
 
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
@@ -14,14 +16,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.input.key.*
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.tooling.preview.PreviewScreenSizes
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.mikepenz.markdown.compose.components.markdownComponents
+import com.mikepenz.markdown.compose.elements.MarkdownTable
+import com.mikepenz.markdown.m3.Markdown
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.EmptyDestinationsNavigator
@@ -30,7 +37,6 @@ import cz.idlgs.mobile.data.remote.dto.Role
 import cz.idlgs.mobile.nav.ChatNavGraph
 import cz.idlgs.mobile.ui.theme.IDLGSTheme
 import cz.idlgs.mobile.viewmodel.ChatViewModel
-import dev.jeziellago.compose.markdowntext.MarkdownText
 
 @Destination<ChatNavGraph>(start = true)
 @Composable
@@ -105,16 +111,38 @@ fun ChatDialog(
 							contentAlignment = if (isUser) Alignment.CenterEnd else Alignment.CenterStart
 						) {
 							Surface(
-								shape = MaterialTheme.shapes.medium,
-								color = if (isUser) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface,
-								modifier = if (isUser) Modifier.widthIn(max = 900.dp) else Modifier.fillMaxWidth()
+								color = if (isUser) MaterialTheme.colorScheme.primaryContainer
+								else MaterialTheme.colorScheme.surfaceVariant,
+								shape = RoundedCornerShape(
+									topStart = 16.dp,
+									topEnd = 16.dp,
+									bottomStart = if (isUser) 16.dp else 0.dp,
+									bottomEnd = if (isUser) 0.dp else 16.dp
+								),
+								modifier = Modifier
+									.widthIn(max = if (isUser) message.content.length.dp else Dp.Unspecified)
+									.wrapContentWidth()
 							) {
-								MarkdownText(
-									markdown = message.content,
-									modifier = Modifier.padding(12.dp),
-									style = LocalTextStyle.current.copy(fontSize = 16.sp),
-									isTextSelectable = true
-								)
+								Box(modifier = Modifier.padding(12.dp)) {
+									Markdown(
+										content = message.content,
+										components = markdownComponents(
+											table = { tableData ->
+												Box(
+													modifier = Modifier
+														.horizontalScroll(rememberScrollState())
+														.padding(vertical = 8.dp)
+												) {
+													MarkdownTable(
+														content = tableData.content,
+														node = tableData.node,
+														style = MaterialTheme.typography.bodyLarge
+													)
+												}
+											}
+										)
+									)
+								}
 							}
 						}
 					}
@@ -134,23 +162,19 @@ fun ChatDialog(
 						onValueChange = { text = it },
 						modifier = Modifier
 							.weight(1f)
-							.focusRequester(focusRequester)
-							.onPreviewKeyEvent {
-								if (it.type == KeyEventType.KeyDown && it.key == Key.Enter) {
-									if (it.isCtrlPressed || it.isShiftPressed) {
-										false
-									} else {
-										if (text.isNotBlank() && !isLoading) {
-											viewModel.sendMessage(text.trim())
-											text = ""
-										}
-										true
-									}
+							.onKeyEvent {
+								if (it.key == Key.Enter) {
+									if (text.isNotBlank()) {
+										viewModel.sendMessage(text.trim())
+										text = ""
+									} else return@onKeyEvent false
+									true
 								} else false
-							},
+							}
+							.focusRequester(focusRequester),
 						shape = MaterialTheme.shapes.medium,
 						placeholder = { Text("Ask something...") },
-						maxLines = 4
+						maxLines = 4,
 					)
 					Spacer(modifier = Modifier.width(8.dp))
 					IconButton(
