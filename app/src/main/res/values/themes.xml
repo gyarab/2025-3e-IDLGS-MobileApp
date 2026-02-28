@@ -2,5 +2,6 @@
 <resources>
     <style name="Theme.IDLGS" parent="android:Theme.Material.Light.NoActionBar">
         <item name="android:windowBackground">@color/bg</item>
+        <item name="android:windowSoftInputMode">adjustResize</item>
     </style>
 </resources>
