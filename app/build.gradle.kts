@@ -102,12 +102,17 @@ dependencies {
 	implementation(libs.okhttp)
 	implementation(libs.gson)
 
-	implementation("io.github.raamcosta.compose-destinations:core:2.3.0")
-	ksp("io.github.raamcosta.compose-destinations:ksp:2.3.0")
+	implementation(libs.androidx.security.crypto)
 	implementation(libs.hilt.android)
 	ksp(libs.hilt.android.compiler)
+
+	implementation("io.github.raamcosta.compose-destinations:core:2.3.0")
+	ksp("io.github.raamcosta.compose-destinations:ksp:2.3.0")
 	implementation(libs.androidx.hilt.navigation.compose)
-	implementation("com.github.jeziellago:compose-markdown:0.5.8")
+//	implementation("com.github.jeziellago:compose-markdown:0.5.8")
+//	implementation("com.halilibo.compose-richtext:richtext-commonmark:0.20.0")
+//	implementation("com.halilibo.compose-richtext:richtext-ui-material3:0.20.0")
+	implementation("com.mikepenz:multiplatform-markdown-renderer-m3:0.39.2")
 
 	testImplementation(libs.junit)
 	androidTestImplementation(libs.androidx.junit)
