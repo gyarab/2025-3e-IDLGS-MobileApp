@@ -170,7 +170,7 @@ fun BottomToolbar() {
 						shape = MaterialTheme.shapes.medium,
 						modifier = Modifier
 							.fillMaxHeight()
-							.size(48.dp),
+							.size(52.dp),
 						colors = IconButtonDefaults.iconButtonColors(
 							containerColor = MaterialTheme.colorScheme.primaryContainer
 						),
@@ -187,7 +187,7 @@ fun BottomToolbar() {
 					shape = MaterialTheme.shapes.medium,
 					modifier = Modifier
 						.fillMaxHeight()
-						.size(48.dp),
+						.size(52.dp),
 					colors = IconButtonDefaults.iconButtonColors(
 						containerColor = MaterialTheme.colorScheme.primaryContainer
 					),

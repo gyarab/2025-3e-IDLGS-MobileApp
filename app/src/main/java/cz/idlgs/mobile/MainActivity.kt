@@ -17,16 +17,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.PreviewScreenSizes
-import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.generated.NavGraphs
-import com.ramcosta.composedestinations.navigation.DependenciesContainerBuilder
 import com.ramcosta.composedestinations.spec.Direction
-import com.ramcosta.composedestinations.spec.TypedDestinationSpec
 import com.ramcosta.composedestinations.utils.rememberDestinationsNavigator
 import cz.idlgs.mobile.nav.Destinations
 import cz.idlgs.mobile.ui.theme.IDLGSTheme
@@ -132,16 +129,11 @@ fun IDLGSApp(uiEventManager: UiEventManager? = null) {
 			)
 			SnackbarHost(
 				hostState = snackbarHostState,
-				modifier = Modifier
-					.align(Alignment.BottomStart)
-					.widthIn(max = 300.dp)
+				modifier = Modifier.align(Alignment.BottomStart)
 			)
 		}
 	}
 }
-
-private fun DependenciesContainerBuilder<*>.isIn(vararg destinations: TypedDestinationSpec<*>) =
-	destination in destinations
 
 @Composable
 fun Greeting(

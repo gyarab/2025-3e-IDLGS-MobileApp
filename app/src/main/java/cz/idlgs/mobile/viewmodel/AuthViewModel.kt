@@ -12,6 +12,7 @@ import androidx.lifecycle.viewModelScope
 import com.ramcosta.composedestinations.generated.NavGraphs
 import com.ramcosta.composedestinations.generated.destinations.ListScreenDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import cz.idlgs.mobile.BuildConfig
 import cz.idlgs.mobile.R
 import cz.idlgs.mobile.data.UserPreferences
 import cz.idlgs.mobile.domain.repository.AuthRepository
@@ -30,7 +31,7 @@ class AuthViewModel @Inject constructor(
 ) : ViewModel() {
 	var email by mutableStateOf(TextFieldValue(""))
 		private set
-	var password by mutableStateOf("")
+	var password by mutableStateOf(if (BuildConfig.DEBUG) "test" else "")
 		private set
 	var emailError by mutableStateOf<String?>(null)
 		private set
@@ -73,7 +74,7 @@ class AuthViewModel @Inject constructor(
 	private val emailRegex = Patterns.EMAIL_ADDRESS.toRegex()
 	private fun isEmailFormatValid(email: String) = email.matches(emailRegex)
 
-	fun performLogin(navigator: DestinationsNavigator,context: Context) {
+	fun login(navigator: DestinationsNavigator, context: Context) {
 		viewModelScope.launch {
 			emailError = null
 			passwordError = null
@@ -104,7 +105,7 @@ class AuthViewModel @Inject constructor(
 		}
 	}
 
-	fun performForgotPassword(context: Context) {
+	fun forgotPassword(context: Context) {
 		viewModelScope.launch {
 			emailError = null
 			if (!isEmailFormatValid(email.text)) {
