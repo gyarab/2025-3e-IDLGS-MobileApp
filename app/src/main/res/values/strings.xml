@@ -27,4 +27,7 @@
 	<string name="courses_n_textbooks">Courses &amp; Textbooks</string>
 	<string name="search">Search</string>
 	<string name="welcome_to_idlgs_mobile">Welcome to IDLGS Mobile</string>
+	<string name="successfully_logged_in">Successfully logged in</string>
+	<string name="login_failed">Login failed</string>
+	<string name="password_cannot_be_empty">Password cannot be empty</string>
 </resources>
