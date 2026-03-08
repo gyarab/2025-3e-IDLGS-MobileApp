@@ -5,7 +5,7 @@ import androidx.compose.animation.core.tween
 import androidx.navigation.NavBackStackEntry
 import com.ramcosta.composedestinations.animations.NavHostAnimatedDestinationStyle
 
-object HorizontalSlideTransitions : NavHostAnimatedDestinationStyle() {
+object SlideLeftTransitions : NavHostAnimatedDestinationStyle() {
 	override val enterTransition: AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition =
 		{
 			slideInHorizontally(
@@ -16,14 +16,14 @@ object HorizontalSlideTransitions : NavHostAnimatedDestinationStyle() {
 	override val exitTransition: AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition =
 		{
 			slideOutHorizontally(
-				targetOffsetX = { -it },
+				targetOffsetX = { it },
 				animationSpec = tween(300)
 			) + fadeOut(animationSpec = tween(600))
 		}
 	override val popEnterTransition: AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition =
 		{
 			slideInHorizontally(
-				initialOffsetX = { -it },
+				initialOffsetX = { it },
 				animationSpec = tween(300)
 			) + fadeIn(animationSpec = tween(600))
 		}
