@@ -156,6 +156,23 @@ object MockData {
 			grade = "Grade 1",
 			progress = 90,
 			archived = false
+		),
+		Course(
+			id = 3,
+			name = "kurz 2027",
+			description = "New course",
+			subject = "sebastianism",
+			textbookId = 2,
+			createdAt = "",
+			modifiedAt = "",
+			red = 0x42,
+			green = 0x96,
+			blue = 0xC5,
+			type = CourseType.COURSE,
+			author = "sebastian",
+			grade = "Grade 1",
+			progress = 100,
+			archived = true,
 		)
 	)
 }
