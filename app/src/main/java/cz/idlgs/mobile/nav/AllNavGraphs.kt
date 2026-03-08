@@ -3,14 +3,14 @@ package cz.idlgs.mobile.nav
 import com.ramcosta.composedestinations.annotation.NavGraph
 import com.ramcosta.composedestinations.annotation.RootGraph
 
-@NavGraph<RootGraph>(start = true, defaultTransitions = FadeTransitions::class)
+@NavGraph<RootGraph>(start = true, defaultTransitions = SlideRightTransitions::class)
 annotation class AuthNavGraph
 
 @NavGraph<RootGraph>(defaultTransitions = FadeTransitions::class)
 annotation class ChatNavGraph
 
-@NavGraph<RootGraph>(defaultTransitions = FadeTransitions::class)
+@NavGraph<RootGraph>(defaultTransitions = SlideLeftTransitions::class)
 annotation class GuestNavGraph
 
-@NavGraph<RootGraph>(defaultTransitions = HorizontalSlideTransitions::class)
+@NavGraph<RootGraph>(defaultTransitions = SlideRightTransitions::class)
 annotation class UserNavGraph
